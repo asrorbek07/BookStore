@@ -28,6 +28,18 @@ public class AuthorMenu {
 
 			switch (inputNumber) {
 			//
+			case 1:
+				narrator.sayln("New author added");
+				break;
+			case 2:
+				narrator.sayln("Author name is edited or updated");
+				break;
+			case 3:
+				narrator.sayln("Author deleted from table");
+				break;
+			case 4:
+				narrator.sayln("Showing all authors names");
+				break;
 			case 0:
 				this.exitProgram();
 
@@ -43,7 +55,10 @@ public class AuthorMenu {
 		narrator.sayln("..............................");
 		narrator.sayln(" Author menu ");
 		narrator.sayln("..............................");
-
+		narrator.sayln("1. Add new author");
+		narrator.sayln("2. Edit author name");
+		narrator.sayln("3. Delete author");
+		narrator.sayln("4. Show all authors");
 		narrator.sayln("..............................");
 		narrator.sayln(" 0. Exit program");
 		narrator.sayln("..............................");
@@ -54,7 +69,7 @@ public class AuthorMenu {
 		narrator.say("Select: ");
 		int menuNumber = scanner.nextInt();
 
-		if (menuNumber >= 0 && menuNumber <= 6) {
+		if (menuNumber >= 0 && menuNumber <= 4) {
 			scanner.nextLine();
 			return menuNumber;
 		} else {
