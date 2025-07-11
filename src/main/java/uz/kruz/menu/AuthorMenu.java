@@ -72,7 +72,7 @@ public class AuthorMenu {
         narrator.say("Select: ");
         int menuNumber = scanner.nextInt();
 
-        if (menuNumber >= 0 && menuNumber <= 4) {
+        if (menuNumber >= 0 && menuNumber <= 5) {
             scanner.nextLine();
             return menuNumber;
         } else {
