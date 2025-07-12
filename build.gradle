@@ -5,11 +5,23 @@ plugins {
 group = 'uz.kruz'
 version = '1.0-SNAPSHOT'
 
+java {
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    // MariaDB JDBC Driver
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.4'
+    compileOnly("org.projectlombok:lombok:1.18.26")
+    annotationProcessor("org.projectlombok:lombok:1.18.26")
+    // SLF4J simple logger to avoid warnings and show logs on console
+    implementation("org.slf4j:slf4j-simple:2.0.9")
+    // Testing
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

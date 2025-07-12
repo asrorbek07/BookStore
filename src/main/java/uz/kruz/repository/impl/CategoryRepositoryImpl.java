@@ -1,0 +1,58 @@
+package uz.kruz.repository.impl;
+
+import uz.kruz.db.DatabaseConnection;
+import uz.kruz.domain.Category;
+import uz.kruz.repository.CategoryRepository;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+public class CategoryRepositoryImpl implements CategoryRepository {
+
+    private final Connection connection;
+
+    public CategoryRepositoryImpl() {
+        try {
+            this.connection = DatabaseConnection.getInstance().getConnection();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to initialize database connection", e);
+        }
+    }
+
+    @Override
+    public Category create(Category entity) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public Optional<Category> retrieveById(Integer id) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public List<Category> retrieveAll() {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public boolean deleteById(Integer id) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public Category update(Category entity) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public long count() {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public Optional<Category> retrieveByName(String name) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+}
