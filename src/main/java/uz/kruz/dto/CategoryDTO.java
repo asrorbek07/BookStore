@@ -12,4 +12,14 @@ import lombok.experimental.SuperBuilder;
 public class CategoryDTO extends BaseDTO {
     private String name;
 
+    @Override
+    public String toString() {
+        return "CategoryDTO{" +
+                "id=" + getId() +
+                ", name='" + name + '\'' +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
+
 }

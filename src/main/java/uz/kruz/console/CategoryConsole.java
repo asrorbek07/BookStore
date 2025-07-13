@@ -53,8 +53,8 @@ public class CategoryConsole {
                 CategoryDTO categoryDTO = CategoryDTO.builder()
                         .name(categoryName)
                         .build();
-                categoryService.register(categoryDTO);
-                narrator.say("\n Registered category: " + categoryDTO.toString());
+                Category registeredCategory = categoryService.register(categoryDTO);
+                narrator.say("\n Registered category: " + registeredCategory.toString());
             } catch (IllegalArgumentException | ServiceException | RepositoryException e) {
                 //
                 narrator.sayln(e.getMessage());

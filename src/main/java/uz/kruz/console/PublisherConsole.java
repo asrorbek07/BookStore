@@ -8,6 +8,7 @@ import uz.kruz.service.impl.PublisherServiceImpl;
 import uz.kruz.util.ConsoleUtil;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
+import uz.kruz.util.Validator;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.util.exceptions.ServiceException;
 
@@ -26,16 +27,33 @@ public class PublisherConsole {
 
     public void register() {
         while (true) {
-            String publisherName = consoleUtil.getValueOf("\n Publisher name (0. publisher menu): ");
-            if (publisherName.equals("0")) return;
-
             try {
+                String publisherName = consoleUtil.getValueOf("\n Publisher name (0. publisher menu)");
+                if (publisherName.equals("0")) return;
+                Validator.validateString(publisherName, "Name");
+                String publisherContactEmail = consoleUtil.getValueOf("\n Publisher contact email (0. publisher menu, -1. Skip contact email)");
+                if (publisherContactEmail.equals("0")) return;
+                if (publisherContactEmail.equals("-1")) {
+                    publisherContactEmail = null; // Skip contact email
+                } else {
+                    Validator.validateString(publisherContactEmail, "Contact Email");
+                }
+                String publisherPhone = consoleUtil.getValueOf("\n Publisher phone (0. publisher menu -1. Skip phone)");
+                if (publisherPhone.equals("0")) return;
+                if (publisherPhone.equals("-1")) {
+                    publisherPhone = null; // Skip phone
+                } else {
+                    Validator.validateString(publisherPhone, "Phone");
+                }
+
                 PublisherDTO publisherDTO = PublisherDTO.builder()
                         .name(publisherName)
+                        .contactEmail(publisherContactEmail)
+                        .phone(publisherPhone)
                         .build();
 
-                publisherService.register(publisherDTO);
-                narrator.sayln("\n Registered publisher: " + publisherName);
+                Publisher registeredPublisher = publisherService.register(publisherDTO);
+                narrator.sayln("\n Registered publisher: " + registeredPublisher.toString());
             } catch (IllegalArgumentException | ServiceException | RepositoryException e) {
                 narrator.sayln(e.getMessage());
             }
@@ -123,6 +141,17 @@ public class PublisherConsole {
             }
         } else {
             narrator.sayln("Remove cancelled. Publisher is safe: " + targetPublisher.getName());
+        }
+    }
+
+    public void showAll() {
+        try {
+            narrator.sayln(String.format("\n\t > All Publishers (%d): ", publisherService.count()));
+            for (Publisher publisher : publisherService.findAll()) {
+                narrator.sayln("\t > " + publisher.toString());
+            }
+        } catch (ServiceException | RepositoryException e) {
+            narrator.sayln(e.getMessage());
         }
     }
 }

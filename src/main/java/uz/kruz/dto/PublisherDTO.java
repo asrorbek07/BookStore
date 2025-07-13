@@ -11,6 +11,18 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class PublisherDTO extends BaseDTO {
     private String name;
-    private String contact_email;
+    private String contactEmail;
     private String phone;
+
+    @Override
+    public String toString() {
+        return "PublisherDTO{" +
+                "id=" + getId() +
+                ", name='" + name + '\'' +
+                ", contactEmail='" + contactEmail + '\'' +
+                ", phone='" + phone + '\'' +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 }

@@ -11,5 +11,7 @@ public interface PublisherRepository extends Repository<Publisher, Integer> {
 
     List<Publisher> retrieveByEmail(String email);
 
-    Optional<Publisher> findFirstByEmail(String email);
+    boolean existsByContactEmail(String email);
+
+    boolean existsByPhone(String phone);
 }
