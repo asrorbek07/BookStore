@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ShipmentRepositoryImpl implements ShipmentRepository {
-    private static final String INSERT = "INSERT INTO shipments (order_id, tracking_number, shipped_at, delivery_estimate) VALUES (?, ?, ?, ?)";
+    private static final String INSERT = "INSERT INTO shipments (order_id, tracking_number) VALUES (?, ?)";
     private static final String SELECT_BY_ID = "SELECT * FROM shipments WHERE id = ?";
     private static final String SELECT_ALL = "SELECT * FROM shipments";
     private static final String DELETE = "DELETE FROM shipments WHERE id = ?";
@@ -41,8 +41,6 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
         try (PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, entity.getOrderId());
             ps.setString(2, entity.getTrackingNumber());
-            ps.setTimestamp(3, Timestamp.valueOf(entity.getShippedAt()));
-            ps.setDate(4, Date.valueOf(entity.getDeliveryEstimate()));
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -209,17 +207,5 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
                 .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
                 .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
-    }
-
-    public static void main(String[] args) {
-        ShipmentRepository shipmentRepository = new ShipmentRepositoryImpl();
-        shipmentRepository.retrieveAll().forEach(shipment -> {
-            System.out.println("Shipment ID: " + shipment.getId());
-            System.out.println("Shipment OrderID: " + shipment.getOrderId());
-            System.out.println("Shipment TrackNum: " + shipment.getTrackingNumber());
-            System.out.println("Shipment ShippedAt: " + shipment.getShippedAt());
-            System.out.println("Shipment DeliveryEstimate: " + shipment.getDeliveryEstimate());
-            System.out.println("-----------------------------");
-        });
     }
 }

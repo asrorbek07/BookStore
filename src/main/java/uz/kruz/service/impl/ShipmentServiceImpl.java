@@ -32,26 +32,22 @@ public class ShipmentServiceImpl implements ShipmentService {
         }
         Validator.validateInteger(dto.getOrderId(), "orderId");
         Validator.validateString(dto.getTrackingNo(), "trackingNo");
-        if (dto.getShippedAt() == null) {
-            throw new ServiceException("ShipmentDTO is required");
-        }
-        if (dto.getDeliveryEstimate() == null) {
-            throw new ServiceException("DeliveryEstimateDTO is required");
-        }
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime shippedAt = dto.getShippedAt().toLocalDateTime();
-        if (shippedAt.isAfter(now)) {
-            throw new ServiceException("ShippedAt cannot be in the future");
-        }
-        LocalDate deliveryEstimate = dto.getDeliveryEstimate().toLocalDate();
-        if (deliveryEstimate.isBefore(shippedAt.toLocalDate())) {
-            throw new ServiceException("DeliveryEstimate cannot be before ShippedAt");
-        }
+//        if (dto.getDeliveryEstimate() != null) {
+//            Validator.validateString(String.valueOf(dto.getDeliveryEstimate()), "Delivery Estimate");
+//        }
+//        LocalDateTime now = LocalDateTime.now();
+//        LocalDateTime shippedAt = dto.getShippedAt().toLocalDateTime();
+//        if (shippedAt.isAfter(now)) {
+//            throw new ServiceException("ShippedAt cannot be in the future");
+//        }
+//        LocalDate deliveryEstimate = dto.getDeliveryEstimate().toLocalDate();
+//        if (deliveryEstimate.isBefore(shippedAt.toLocalDate())) {
+//            throw new ServiceException("DeliveryEstimate cannot be before ShippedAt");
+//        }
         Shipment shipment = Shipment.builder()
                 .orderId(dto.getOrderId())
                 .trackingNumber(dto.getTrackingNo())
-                .shippedAt(dto.getShippedAt().toLocalDateTime())
-                .deliveryEstimate(dto.getDeliveryEstimate().toLocalDate()).build();
+                .build();
         return shipmentRepository.create(shipment);
     }
 

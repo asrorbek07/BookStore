@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS shipments
     id                INT AUTO_INCREMENT PRIMARY KEY,
     order_id          INT,
     tracking_number   VARCHAR(100) not null ,
-    shipped_at        TIMESTAMP,
-    delivery_estimate DATE,
+    shipped_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    delivery_estimate DATE DEFAULT CURRENT_DATE,
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders (id)
