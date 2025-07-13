@@ -12,8 +12,6 @@ import uz.kruz.util.Validator;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.util.exceptions.ServiceException;
 
-import java.util.Optional;
-
 public class PublisherConsole {
     private PublisherService publisherService;
     private ConsoleUtil consoleUtil;
@@ -25,22 +23,33 @@ public class PublisherConsole {
         this.consoleUtil = new ConsoleUtil(narrator);
     }
 
+    public void showAll() {
+        try {
+            narrator.sayln(String.format("\n\t > All Publishers (%d): ", publisherService.count()));
+            for (Publisher publisher : publisherService.findAll()) {
+                narrator.sayln("\t > " + publisher.toString());
+            }
+        } catch (ServiceException | RepositoryException e) {
+            narrator.sayln(e.getMessage());
+        }
+    }
+
     public void register() {
         while (true) {
             try {
                 String publisherName = consoleUtil.getValueOf("\n Publisher name (0. publisher menu)");
                 if (publisherName.equals("0")) return;
                 Validator.validateString(publisherName, "Name");
-                String publisherContactEmail = consoleUtil.getValueOf("\n Publisher contact email (0. publisher menu, -1. Skip contact email)");
+                String publisherContactEmail = consoleUtil.getValueOf("\n Publisher contact email (0. publisher menu, Enter. no change)");
                 if (publisherContactEmail.equals("0")) return;
-                if (publisherContactEmail.equals("-1")) {
+                if (publisherContactEmail.isBlank()) {
                     publisherContactEmail = null; // Skip contact email
                 } else {
                     Validator.validateString(publisherContactEmail, "Contact Email");
                 }
-                String publisherPhone = consoleUtil.getValueOf("\n Publisher phone (0. publisher menu -1. Skip phone)");
+                String publisherPhone = consoleUtil.getValueOf("\n Publisher phone (0. publisher menu Enter. no change)");
                 if (publisherPhone.equals("0")) return;
-                if (publisherPhone.equals("-1")) {
+                if (publisherPhone.isBlank()) {
                     publisherPhone = null; // Skip phone
                 } else {
                     Validator.validateString(publisherPhone, "Phone");
@@ -60,43 +69,17 @@ public class PublisherConsole {
         }
     }
 
-    public Optional<Publisher> find() {
-        Optional<Publisher> publisherFound = Optional.empty();
-
-        while (true) {
-            String publisherName = consoleUtil.getValueOf("\n Publisher name (0. publisher menu): ");
-            if (publisherName.equals("0")) break;
-
-            try {
-                publisherFound = publisherService.findByName(publisherName);
-                if (publisherFound.isPresent()) {
-                    narrator.sayln("\t > Found publisher: " + publisherFound.get());
-                } else {
-                    narrator.sayln("\t > Publisher not found.");
-                }
-            } catch (ServiceException | RepositoryException e) {
-                narrator.sayln(e.getMessage());
-            }
-        }
-
-        return publisherFound;
-    }
-
     public Publisher findOne() {
         Publisher publisherFound = null;
 
         while (true) {
-            String publisherName = consoleUtil.getValueOf("\n Publisher name (0. publisher menu): ");
+            String publisherName = consoleUtil.getValueOf("\n Publisher name (0. publisher menu)");
             if (publisherName.equals("0")) break;
 
             try {
-                publisherFound = publisherService.findByName(publisherName).orElse(null);
-                if (publisherFound != null) {
-                    narrator.sayln("\t > Found publisher: " + publisherFound);
-                    break;
-                } else {
-                    narrator.sayln("\t > Publisher not found.");
-                }
+                publisherFound = publisherService.findByName(publisherName);
+                narrator.sayln("\t > Found publisher: " + publisherFound);
+                break;
             } catch (ServiceException | RepositoryException e) {
                 narrator.sayln(e.getMessage());
             }
@@ -109,19 +92,42 @@ public class PublisherConsole {
         Publisher targetPublisher = findOne();
         if (targetPublisher == null) return;
 
-        String newName = consoleUtil.getValueOf("\n New publisher name (0.cancel, Enter. no change): ");
+        String newName = consoleUtil.getValueOf("\n New publisher name (0.cancel, Enter. no change)");
         if (newName.equals("0")) return;
-        if (!newName.isBlank()) {
-            targetPublisher.setName(newName);
+        if (newName.isBlank()) {
+            newName=null;
+        }
+        else {
+            Validator.validateString(newName, "Publisher Name");
+        }
+        String newContactEmail = consoleUtil.getValueOf("\n New contact email (0.cancel, Enter. no change)");
+        if (newContactEmail.equals("0")) return;
+        if (newContactEmail.isBlank()) {
+            newContactEmail = null; // No change
+        } else {
+            Validator.validateString(newContactEmail, "Contact Email");
+        }
+        String newPhone = consoleUtil.getValueOf("\n New phone (0.cancel, Enter. no change)");
+        if (newPhone.equals("0")) return;
+        if (newPhone.isBlank()) {
+            newPhone = null; // No change
+        } else {
+            Validator.validateString(newPhone, "Phone");
         }
 
+        if (newName == null && newContactEmail == null && newPhone == null){
+            narrator.sayln("No changes made to the publisher.");
+            return;
+        }
         PublisherDTO dto = PublisherDTO.builder()
-                .name(targetPublisher.getName())
+                .name(newName)
+                .contactEmail(newContactEmail)
+                .phone(newPhone)
                 .build();
 
         try {
-            publisherService.modify(dto, targetPublisher.getId());
-            narrator.sayln("\t > Modified publisher: " + targetPublisher);
+            Publisher modifiedPublisher = publisherService.modify(dto, targetPublisher.getId());
+            narrator.sayln("\t > Modified publisher: " + modifiedPublisher);
         } catch (ServiceException | RepositoryException e) {
             narrator.sayln(e.getMessage());
         }
@@ -144,14 +150,4 @@ public class PublisherConsole {
         }
     }
 
-    public void showAll() {
-        try {
-            narrator.sayln(String.format("\n\t > All Publishers (%d): ", publisherService.count()));
-            for (Publisher publisher : publisherService.findAll()) {
-                narrator.sayln("\t > " + publisher.toString());
-            }
-        } catch (ServiceException | RepositoryException e) {
-            narrator.sayln(e.getMessage());
-        }
-    }
 }

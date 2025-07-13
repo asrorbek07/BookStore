@@ -62,28 +62,6 @@ public class CategoryConsole {
         }
     }
 
-    public Category find() {
-        //
-        Category categoryFound = null;
-        while (true) {
-            //
-            String categoryName = consoleUtil.getValueOf("\n category name to find(0.Category menu) ");
-            if (categoryName.equals("0")) {
-                break;
-            }
-
-            try {
-                categoryFound = categoryService.findByName(categoryName);
-                if (categoryFound != null) {
-                    narrator.sayln("\t > Found category: " + categoryFound);
-                }
-            } catch (ServiceException | RepositoryException e) {
-                narrator.sayln(e.getMessage());
-            }
-        }
-        return categoryFound;
-    }
-
     private Category findOne() {
         //
         Category categoryFound = null;
@@ -116,13 +94,19 @@ public class CategoryConsole {
         if (newName.equals("0")) {
             return;
         }
-
+        if (newName.isBlank()){
+            newName=null;
+        }
+        if (newName == null){
+            narrator.sayln("No change made to the category");
+            return;
+        }
         CategoryDTO categoryDTO = CategoryDTO.builder()
                 .name(newName)
                 .build();
         try {
-            categoryService.modify(categoryDTO, targetCategory.getId());
-            narrator.sayln("\t > Modified category: " + targetCategory);
+            Category modifiedCategory = categoryService.modify(categoryDTO, targetCategory.getId());
+            narrator.sayln("\t > Modified category: " + modifiedCategory);
         } catch (ServiceException | RepositoryException e) {
             narrator.sayln(e.getMessage());
         }

@@ -111,9 +111,10 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public Optional<Publisher> findByName(String name) {
-        Validator.validateString(name, "Email");
-        return publisherRepository.retrieveByName(name);
+    public Publisher findByName(String name) {
+        Validator.validateString(name, "Name");
+        return publisherRepository.retrieveByName(name).orElseThrow(() ->
+                new EntityNotFoundException(String.format("Publisher with name '%s' not found", name)));
     }
 
     @Override
