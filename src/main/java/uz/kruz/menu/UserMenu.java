@@ -1,6 +1,8 @@
 package uz.kruz.menu;
 
 
+import uz.kruz.console.UserConsole;
+import uz.kruz.service.impl.UserServiceImpl;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
 
@@ -11,11 +13,13 @@ public class UserMenu {
 
 	private Scanner scanner;
 	private Narrator narrator;
+	private UserConsole userConsole;
 
 	public UserMenu() {
 		//
 		this.scanner = new Scanner(System.in);
 		this.narrator = new Narrator(this, TalkingAt.Left);
+		this.userConsole= new UserConsole();
 	}
 
 	public void show() {
@@ -31,7 +35,7 @@ public class UserMenu {
 			case 0:
 				this.exitProgram();
 				case 1:
-					narrator.sayln("Added User");
+					userConsole.showAll();
 					break;
 				case 2:
 					narrator.sayln("Deleted user");
@@ -54,7 +58,7 @@ public class UserMenu {
 		narrator.sayln("..............................");
 		narrator.sayln(" User menu ");
 		narrator.sayln("...............................");
-		narrator.sayln("1. Add User ");
+		narrator.sayln("1. Show all users ");
 		narrator.sayln("2. Delete User");
 		narrator.sayln("3. View User");
 		narrator.sayln("4. Update User");
