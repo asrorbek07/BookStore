@@ -1,15 +1,9 @@
 package uz.kruz;
 
 import uz.kruz.db.DatabaseConnection;
-import uz.kruz.db.DatabaseInitializer;
-import uz.kruz.db.DataPopulator;
+import uz.kruz.db.SqlScriptRunner;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * BookStoreAdmin class for managing bookstore operations
@@ -28,27 +22,27 @@ public class BookStoreAdmin {
         // Populate database with sample data
         populateDatabase();
 
-        // Display database connection info
-        displayDatabaseInfo();
-
-        // Test database queries
-        testDatabaseQueries();
+//        // Display database connection info
+//        displayDatabaseInfo();
+//
+//        // Test database queries
+//        testDatabaseQueries();
     }
 
     /**
      * Initialize the database by creating tables
      */
     private void initializeDatabase() {
-        DatabaseInitializer initializer = new DatabaseInitializer();
-        initializer.initializeDatabase();
+        SqlScriptRunner initializer = new SqlScriptRunner();
+        initializer.runScript("/schema.sql", false);
     }
 
     /**
      * Populate the database with sample data
      */
     private void populateDatabase() {
-        DataPopulator populator = new DataPopulator();
-        populator.populateDatabase();
+        SqlScriptRunner populator = new SqlScriptRunner();
+        populator.runScript("/data.sql", true);
     }
 
     /**
@@ -110,10 +104,10 @@ public class BookStoreAdmin {
             System.out.println("\nBooks and Authors:");
             System.out.println("----------------");
             String booksQuery = "SELECT b.title, a.full_name AS author " +
-                               "FROM books b " +
-                               "JOIN book_authors ba ON b.id = ba.book_id " +
-                               "JOIN authors a ON ba.author_id = a.id " +
-                               "ORDER BY b.title";
+                    "FROM books b " +
+                    "JOIN book_authors ba ON b.id = ba.book_id " +
+                    "JOIN authors a ON ba.author_id = a.id " +
+                    "ORDER BY b.title";
             try (Statement stmt = connection.createStatement();
                  ResultSet rs = stmt.executeQuery(booksQuery)) {
                 while (rs.next()) {

@@ -1,6 +1,7 @@
 package uz.kruz.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.util.List;
 /**
  * DTO for the Book entity.
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 public class BookDTO extends BaseDTO {
