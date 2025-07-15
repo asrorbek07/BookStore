@@ -32,6 +32,7 @@ public class Main {
                     System.out.println("Order quantity: " + orderItem.getQuantity());
                     System.out.println("Order price: " + orderItem.getPrice());
                     System.out.println("-----------------------------");
+
                 }
         );
 
