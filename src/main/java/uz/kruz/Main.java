@@ -19,6 +19,7 @@ public class Main {
                     System.out.println("User Email: " + user.getEmail());
                     System.out.println("User Role: " + user.getRole());
                     System.out.println("-----------------------------");
+
                 }
         );
 
