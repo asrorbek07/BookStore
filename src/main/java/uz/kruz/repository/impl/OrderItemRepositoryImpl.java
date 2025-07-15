@@ -5,6 +5,7 @@ import uz.kruz.domain.OrderItem;
 import uz.kruz.repository.OrderItemRepository;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,41 +43,128 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 
     @Override
     public Optional<OrderItem> retrieveById(Integer id) {
-        throw new UnsupportedOperationException("Method not implemented");
+        String sql = "SELECT * FROM order_items WHERE order_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1,id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                return Optional.of(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+        return Optional.empty();
     }
 
     @Override
     public List<OrderItem> retrieveAll() {
-        throw new UnsupportedOperationException("Method not implemented");
-    }
+        List<OrderItem> orderItems = new ArrayList<>();
+        String sql = "SELECT * FROM order_items";
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                orderItems.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+        return orderItems;
+        }
 
     @Override
     public boolean deleteById(Integer id) {
-        throw new UnsupportedOperationException("Method not implemented");
+        String sql = "DELETE FROM order_items WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1,id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new UnsupportedOperationException("Method not implemented", e);
+        }
     }
 
     @Override
     public OrderItem update(OrderItem entity) {
-        throw new UnsupportedOperationException("Method not implemented");
+        String sql = "UPDATE order_items SET quantity = ?, price = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, entity.getQuantity());
+            ps.setBigDecimal(2, entity.getPrice());
+            ps.setInt(3, entity.getId());
+            ps.executeUpdate();
+            return entity;
+        } catch (SQLException e) {
+            throw new UnsupportedOperationException("Method not implemented", e);
+        }
     }
 
     @Override
     public long count() {
-        throw new UnsupportedOperationException("Method not implemented");
+        String sql = "SELECT COUNT(*) FROM order_items";
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException e) {
+            throw new UnsupportedOperationException("Method not implemented", e);
+        }
+        return 0;
     }
 
     @Override
     public List<OrderItem> retrieveByOrderId(Integer orderId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        List<OrderItem> orderItems = new ArrayList<>();
+        String sql = "SELECT * FROM order_items WHERE order_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                orderItems.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new UnsupportedOperationException("Method not implemented", e);
+        }
+        return orderItems;
     }
 
     @Override
     public List<OrderItem> retrieveByBookId(Integer bookId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        List<OrderItem> orderItems = new ArrayList<>();
+        String sql = "SELECT * FROM order_items WHERE book_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                orderItems.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new UnsupportedOperationException("Method not implemented", e);
+        }
+        return orderItems;
     }
 
     @Override
     public List<OrderItem> retrieveByQuantityGreaterThan(Integer quantity) {
-        throw new UnsupportedOperationException("Method not implemented");
+        List<OrderItem> orderItems = new ArrayList<>();
+        String sql = "SELECT * FROM order_items WHERE quantity > ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, quantity);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                orderItems.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new UnsupportedOperationException("Method not implemented", e);
+        }
+        return orderItems;
+    }
+
+    private OrderItem mapRow(ResultSet rs) throws SQLException {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setId(rs.getInt("id"));
+        orderItem.setOrderId(rs.getInt("order_id"));
+        orderItem.setBookId(rs.getInt("book_id"));
+        orderItem.setQuantity(rs.getInt("quantity"));
+        orderItem.setPrice(rs.getBigDecimal("price"));
+        return orderItem;
     }
 }
