@@ -28,8 +28,8 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Order create(Order entity) {
-        String sql = "insert into orders(user_id, total_amount, status, order_date, update_date) values (?, ?, ?, ?, ?, ?)";
+    public Order create(Order entity) {   //👍
+        String sql = "insert into orders(user_id, total_amount, status) values (?, ?, ?)";
         try(PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, entity.getUserId());
             ps.setBigDecimal(2, entity.getTotalAmount());
@@ -52,7 +52,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Optional<Order> retrieveById(Integer id) {
+    public Optional<Order> retrieveById(Integer id) { //👍
         String sql = "SELECT * FROM orders WHERE id = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -69,7 +69,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> retrieveAll() {
+    public List<Order> retrieveAll() { // 👍
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders";
         try(Statement stmt = connection.createStatement()){
@@ -85,7 +85,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public boolean deleteById(Integer id) {
+    public boolean deleteById(Integer id) { // 👍
         String sql = "DELETE FROM orders WHERE id = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -97,21 +97,22 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Order update(Order entity) {
+    public Order update(Order entity) { // 👍
         String sql = "update orders set user_id = ?, total_amount = ?, status = ? where id = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)) {
          ps.setInt(1, entity.getUserId());
          ps.setBigDecimal(2, entity.getTotalAmount());
          ps.setString(3, entity.getStatus().name());
+         ps.setInt(4, entity.getId());
          ps.executeUpdate();
-         return entity;
-        } catch(SQLException e) {
+            } catch(SQLException e) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+         return entity;
     }
 
     @Override
-    public long count() {
+    public long count() { // 👍
         String sql = "select count(*) from orders";
         try(Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
@@ -126,7 +127,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> retrieveByUserId(Integer userId) {
+    public List<Order> retrieveByUserId(Integer userId) { //👍
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE user_id = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)){
@@ -142,7 +143,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> retrieveByStatus(OrderStatus status) {
+    public List<Order> retrieveByStatus(OrderStatus status) { //👍
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE status = ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -158,7 +159,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> retrieveByOrderDateAfter(LocalDateTime date) {
+    public List<Order> retrieveByOrderDateAfter(LocalDateTime date) { // 👍
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE order_date < ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -174,9 +175,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> retrieveByTotalAmountGreaterThan(Double amount) {
+    public List<Order> retrieveByTotalAmountGreaterThan(Double amount) { // 👍
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT * FROM orders WHERE order_amount > ?";
+        String sql = "SELECT * FROM orders WHERE total_amount > ?";
         try(PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setBigDecimal(1, BigDecimal.valueOf(amount));
             ResultSet rs = ps.executeQuery();
@@ -197,6 +198,9 @@ public class OrderRepositoryImpl implements OrderRepository {
         order.setStatus(OrderStatus.valueOf(rs.getString("status")));
         return order;
     }
+//public static void main(String[] args) {
+//
+//}
 }
 //        order.set(rs.getString("phone"));
 //        order.setRole(UserRole.valueOf(rs.getString("role")));
