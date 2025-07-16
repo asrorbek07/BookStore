@@ -124,16 +124,50 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
 
     @Override
     public List<BookAuthor> retrieveByBookId(Integer bookId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        List<BookAuthor> bookAuthors = new ArrayList<>();
+        String sql = "SELECT * FROM BookAuthors WHERE book_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                bookAuthors.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving BookAuthor by bookId", e);
+        }
+        return bookAuthors;
     }
+
 
     @Override
     public List<BookAuthor> retrieveByAuthorId(Integer authorId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        List<BookAuthor> bookAuthors = new ArrayList<>();
+        String sql = "SELECT * FROM BookAuthors WHERE author_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, authorId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                bookAuthors.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving BookAuthor by AuthorId", e);
+        }
+        return bookAuthors;
     }
 
     @Override
     public Optional<BookAuthor> retrieveByBookIdAndAuthorId(Integer bookId, Integer authorId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        String sql = "SELECT * FROM BookAuthors WHERE book_id = ? AND author_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ps.setInt(2, authorId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapRow(rs)); // mapRow() -> rs dan BookAuthor obyektini yasaydi
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving BookAuthor by bookId and authorId", e);
+        }
+        return Optional.empty();
     }
 }
