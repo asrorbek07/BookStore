@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class OrderItemRepositoryImpl implements OrderItemRepository {
-    private String INSERT = "INSERT INTO order_items(order_id, book_id, quantity, price) VALUES(?, ?, ?, ?)";
-    private String SELECT = "SELECT * FROM order_items WHERE order_id = ?";
-    private String SELECT_ALL = "SELECT * FROM order_items";
-    private String DELETE = "DELETE FROM order_items WHERE id = ?";
-    private String UPDATE = "UPDATE order_items SET quantity = ?, price = ? WHERE id = ?";
-    private String COUNT = "SELECT COUNT(*) FROM order_items";
-    private String SELECT_BY_ORDER = "SELECT * FROM order_items WHERE order_id = ?";
-    private String SELECT_BY_BOOK = "SELECT * FROM order_items WHERE book_id = ?";
-    private String SELECT_BY_QUANTITY = "SELECT * FROM order_items WHERE quantity > ?";
+    private final String INSERT = "INSERT INTO order_items(order_id, book_id, quantity, price) VALUES(?, ?, ?, ?)";
+    private final String SELECT = "SELECT * FROM order_items WHERE order_id = ?";
+    private final String SELECT_ALL = "SELECT * FROM order_items";
+    private final String DELETE = "DELETE FROM order_items WHERE id = ?";
+    private final String UPDATE = "UPDATE order_items SET quantity = ?, price = ? WHERE id = ?";
+    private final String COUNT = "SELECT COUNT(*) FROM order_items";
+    private final String SELECT_BY_ORDER = "SELECT * FROM order_items WHERE order_id = ?";
+    private final String SELECT_BY_BOOK = "SELECT * FROM order_items WHERE book_id = ?";
+    private final String SELECT_BY_QUANTITY = "SELECT * FROM order_items WHERE quantity > ?";
     private final Connection connection;
 
     public OrderItemRepositoryImpl() {
