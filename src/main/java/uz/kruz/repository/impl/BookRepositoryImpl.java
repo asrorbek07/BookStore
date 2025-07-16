@@ -18,6 +18,19 @@ import java.util.Optional;
 public class BookRepositoryImpl implements BookRepository {
 
     private final Connection connection;
+    private final String INSERT = "INSERT INTO books (title, isbn, price, stock,published_year) VALUES (?, ?, ?, ?, ?)";
+    private final String SELECTBYID = "SELECT * FROM books WHERE id = ?";
+    private final String DELETEBYID = "DELETE FROM books WHERE id = ?";
+    private final String SELECTALL = "SELECT * FROM books";
+    private final String UPDATE = "UPDATE books SET title = ?, isbn = ?, price = ?, stock = ?,published_year = ? where id = ?";
+    private final String COUNT = "SELECT COUNT(*) FROM books";
+    private final String BYISBN = "SELECT * FROM books WHERE isbn = ?";
+    private final String BYTITLE = "SELECT * FROM books WHERE title = ?";
+    private final String BYCATEGORY = "SELECT * FROM books WHERE title = ?";
+    private final String BYPUBLISHER = "SELECT * FROM books WHERE published_year = ?";
+    private final String BYAUTHORID = "SELECT * FROM books WHERE published_year = ?";
+    private final String BYSTOCKLESS = "SELECT * FROM books WHERE stock < ?";
+
 
     public BookRepositoryImpl() {
         try {
@@ -30,9 +43,8 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public Book create(Book entity) {
 
-        String sql = "INSERT INTO books (title, isbn, price, stock,published_year) VALUES (?, ?, ?, ?, ?)";
         try {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, entity.getTitle());
             ps.setString(2, entity.getIsbn());
             ps.setBigDecimal(3, entity.getPrice());
@@ -53,8 +65,8 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Optional<Book> retrieveById(Integer id) {
-        String sql = "SELECT * FROM books WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(SELECTBYID)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -71,9 +83,9 @@ public class BookRepositoryImpl implements BookRepository {
     public List<Book> retrieveAll() {
 
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books";
+
         try (Statement statement = (Statement) connection.createStatement()) {
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = statement.executeQuery(SELECTALL);
             while (rs.next()) {
                 books.add(mapRow(rs));
             }
@@ -86,8 +98,8 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public boolean deleteById(Integer id) {
-        String sql = "DELETE FROM books WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(DELETEBYID)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -97,8 +109,7 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Book update(Book entity) {
-        String sql = "UPDATE books SET title = ?, isbn = ?, price = ?, stock = ?,published_year = ? where id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
 
             ps.setString(1, entity.getTitle());
             ps.setString(2, entity.getIsbn());
@@ -118,9 +129,9 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public long count() {
-        String sql = "SELECT COUNT(*) FROM books";
+
         try (Statement statement = (Statement) connection.createStatement()) {
-            ResultSet rs = statement.executeQuery(sql);
+            ResultSet rs = statement.executeQuery(COUNT);
             if (rs.next()) {
                 return rs.getLong(1);
             }
@@ -133,8 +144,8 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Optional<Book> retrieveByIsbn(String isbn) {
-        String sql = "SELECT * FROM books WHERE isbn = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(BYISBN)) {
             ps.setInt(1, Integer.parseInt(isbn));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -149,8 +160,8 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> retrieveByTitle(String title) {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books WHERE title = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(BYTITLE)) {
             ps.setString(1, title);
             ResultSet rs = ps.executeQuery();
 
@@ -168,8 +179,8 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> retrieveByCategoryId(Integer categoryId) {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books WHERE category_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(BYCATEGORY)) {
             ps.setInt(1, categoryId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -184,8 +195,8 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> retrieveByPublisherId(Integer publisherId) {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books WHERE published_year = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(BYPUBLISHER)) {
             ps.setInt(1, publisherId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -200,8 +211,8 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> retrieveByAuthorId(Integer authorId) {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books join book_authors ba on books.id = ba.book_id where ba.author_id = ?" ;
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(BYAUTHORID)) {
             ps.setInt(1, authorId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -216,8 +227,8 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> retrieveByStockLessThan(Integer amount) {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books WHERE stock < ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(BYSTOCKLESS)) {
             ps.setInt(1, amount);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -249,10 +260,13 @@ public class BookRepositoryImpl implements BookRepository {
         book.setStock(1);
         book.setPublishedYear(1948);
 
-        BookRepositoryImpl bookRepository =  new BookRepositoryImpl();
-        Book book1 = bookRepository.create(book);
-        System.out.println(book1);
-
+        BookRepositoryImpl bookRepository = new BookRepositoryImpl();
+//        Book book1 = bookRepository.create(book);
+//        System.out.println(book1);
+        System.out.println(bookRepository.count());
+        List<Book> books = bookRepository.retrieveAll();
+        System.out.println(books.toString());
+        bookRepository.deleteById(5);
 
     }
 }
