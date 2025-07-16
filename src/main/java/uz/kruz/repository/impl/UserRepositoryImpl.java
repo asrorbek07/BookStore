@@ -12,6 +12,15 @@ import java.util.Optional;
 
 public class UserRepositoryImpl implements UserRepository {
 
+    private final String INSERT = "INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)";
+    private final String SELECT = "SELECT * FROM users WHERE id = ?";
+    private final String SELECT_ALL = "SELECT * FROM users";
+    private final String DELETE = "DELETE FROM users WHERE id = ?";
+    private final String UPDATE = "UPDATE users SET full_name = ?, email = ?, password = ?, phone = ?, role = ? WHERE id = ?";
+    private final String COUNT = "SELECT COUNT(*) FROM users";
+    private final String SELECT_BY_EMAIL = "SELECT * FROM users WHERE email = ?";
+    private final String SELECT_ALL_BY_NAME = "SELECT * FROM users WHERE full_name LIKE ?";
+    private final String SELECT_ALL_BY_ROLE = "SELECT * FROM users WHERE role = ?";
     private final Connection connection;
 
     public UserRepositoryImpl() {
@@ -24,8 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        String sql = "INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getFullName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPassword());
@@ -45,8 +53,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> retrieveById(Integer id) {
-        String sql = "SELECT * FROM users WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -61,9 +68,8 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> retrieveAll() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users";
         try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(SELECT_ALL);
             while (rs.next()) {
                 users.add(mapRow(rs));
             }
@@ -75,8 +81,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean deleteById(Integer id) {
-        String sql = "DELETE FROM users WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -86,8 +91,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User update(User user) {
-        String sql = "UPDATE users SET full_name = ?, email = ?, password = ?, phone = ?, role = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setString(1, user.getFullName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPassword());
@@ -103,9 +107,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public long count() {
-        String sql = "SELECT COUNT(*) FROM users";
         try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(COUNT);
             if (rs.next()) {
                 return rs.getLong(1);
             }
@@ -117,8 +120,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> retrieveByEmail(String email) {
-        String sql = "SELECT * FROM users WHERE email = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_EMAIL)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -133,8 +135,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> retrieveByName(String name) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users WHERE full_name LIKE ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_ALL_BY_NAME)) {
             ps.setString(1, "%" + name + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -149,8 +150,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> retrieveByRole(UserRole role) {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users WHERE role = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_ALL_BY_ROLE)) {
             ps.setString(1, role.name());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
