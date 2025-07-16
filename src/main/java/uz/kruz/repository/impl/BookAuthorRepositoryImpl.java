@@ -3,6 +3,8 @@ package uz.kruz.repository.impl;
 import org.mariadb.jdbc.Statement;
 import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.BookAuthor;
+import uz.kruz.domain.User;
+import uz.kruz.domain.vo.UserRole;
 import uz.kruz.repository.BookAuthorRepository;
 
 import java.sql.*;
@@ -56,14 +58,26 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
         }
         return Optional.empty();
     }
-
     @Override
     public List<BookAuthor> retrieveAll() {
-        return List.of();
+        List<BookAuthor> bookAuthors = new ArrayList<>();
+        String sql = "SELECT * FROM BookAuthors";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                bookAuthors.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving all BookAuthors", e);
+        }
+        return bookAuthors;
     }
 
-    private BookAuthor mapRow(ResultSet rs) {
-        return null;
+    private BookAuthor mapRow(ResultSet rs) throws SQLException {
+        return BookAuthor.builder()
+                .bookId(rs.getInt("book_id"))
+                .authorId(rs.getInt("author_id"))
+                .build();
     }
 
     @Override
@@ -169,5 +183,11 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
             throw new RuntimeException("Error retrieving BookAuthor by bookId and authorId", e);
         }
         return Optional.empty();
+    }
+
+    public static void main(String[] args) {
+        BookAuthorRepositoryImpl repository = new BookAuthorRepositoryImpl();
+        repository.retrieveByAuthorId(5);
+
     }
 }
