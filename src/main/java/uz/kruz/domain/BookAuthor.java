@@ -1,17 +1,14 @@
 package uz.kruz.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import uz.kruz.domain.vo.BaseEntity;
 
-/**
- * Domain class representing the book_authors junction table in the database.
- * This is a many-to-many relationship between books and authors.
- */
-@Data
-@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@SuperBuilder
 public class BookAuthor extends BaseEntity {
-    public String getFullName;
     private Integer bookId;
     private Integer authorId;
 
@@ -19,43 +16,4 @@ public class BookAuthor extends BaseEntity {
     private Book book;
     private Author author;
 
-    public BookAuthor(Integer bookId, Integer authorId, java.time.LocalDateTime createdAt, 
-                     java.time.LocalDateTime updatedAt, Book book, Author author) {
-        super(null, createdAt, updatedAt);
-        this.bookId = bookId;
-        this.authorId = authorId;
-        this.book = book;
-        this.author = author;
-    }
-
-    // Override BaseEntity methods for composite key
-    @Override
-    public Integer getId() {
-        return null; // This entity uses a composite key (bookId, authorId)
-    }
-
-    @Override
-    public void setId(Integer id) {
-        // No-op as this entity uses a composite key
-    }
-
-    @Override
-    public String getEmail() {
-        return "";
-    }
-
-    @Override
-    public String getPassword() {
-        return "";
-    }
-
-    @Override
-    public String getPhone() {
-        return "";
-    }
-
-    @Override
-    public <E extends Enum<E>> Enum<E> getRole() {
-        return null;
-    }
 }
