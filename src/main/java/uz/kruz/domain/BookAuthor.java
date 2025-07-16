@@ -16,4 +16,23 @@ public class BookAuthor extends BaseEntity {
     private Book book;
     private Author author;
 
+    @Override
+    public String getEmail() {
+        return "";
+    }
+
+    @Override
+    public String getPassword() {
+        return "";
+    }
+
+    @Override
+    public String getPhone() {
+        return "";
+    }
+
+    @Override
+    public <E extends Enum<E>> Enum<E> getRole() {
+        return null;
+    }
 }
