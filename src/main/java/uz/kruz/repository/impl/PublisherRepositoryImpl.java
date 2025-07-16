@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 public class PublisherRepositoryImpl implements PublisherRepository {
-    private String INSERT = "INSERT INTO publishers(name, contact_email, phone) VALUES (?, ?, ?)";
-    private String SELECT = "SELECT * FROM publishers WHERE id = ?";
-    private String SELECT_ALL = "SELECT * FROM publishers";
-    private String DELETE = "DELETE FROM publishers WHERE id = ?";
-    private String UPDATE = "UPDATE publishers SET name = ?, contact_email = ?, phone = ? WHERE id = ?";
-    private String COUNT = "SELECT COUNT(*) FROM publishers";
-    private String SELECT_BY_NAME = "SELECT * FROM publishers WHERE name LIKE ?";
-    private String SELECT_BY_EMAIL = "SELECT * FROM publishers WHERE contact_email = ?";
+    private final String INSERT = "INSERT INTO publishers(name, contact_email, phone) VALUES (?, ?, ?)";
+    private final String SELECT = "SELECT * FROM publishers WHERE id = ?";
+    private final String SELECT_ALL = "SELECT * FROM publishers";
+    private final String DELETE = "DELETE FROM publishers WHERE id = ?";
+    private final String UPDATE = "UPDATE publishers SET name = ?, contact_email = ?, phone = ? WHERE id = ?";
+    private final String COUNT = "SELECT COUNT(*) FROM publishers";
+    private final String SELECT_BY_NAME = "SELECT * FROM publishers WHERE name LIKE ?";
+    private final String SELECT_BY_EMAIL = "SELECT * FROM publishers WHERE contact_email = ?";
 
     private final Connection connection;
 
@@ -149,12 +149,12 @@ public class PublisherRepositoryImpl implements PublisherRepository {
     }
 
     private Publisher mapRow(ResultSet rs) throws SQLException {
-        Publisher publisher = new Publisher();
-        publisher.setId(rs.getInt("id"));
-        publisher.setName(rs.getString("name"));
-        publisher.setContactEmail(rs.getString("contact_email"));
-        publisher.setPhone(rs.getString("phone"));
-        return publisher;
+        return Publisher.builder()
+        .id(rs.getInt("id"))
+        .name(rs.getString("name"))
+        .contactEmail(rs.getString("contact_email"))
+        .phone(rs.getString("phone"))
+        .build();
     }
 
 //    public static void main(String[] args) {
