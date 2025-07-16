@@ -241,32 +241,15 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     private Book mapRow(ResultSet rs) throws SQLException {
-        Book book = new Book();
-        book.setId(rs.getInt("id"));
-        book.setTitle(rs.getString("title"));
-        book.setIsbn(rs.getString("isbn"));
-        book.setPrice(rs.getBigDecimal("price"));
-        book.setStock(rs.getInt("stock"));
-        book.setPublishedYear(rs.getInt("published_year"));
-        return book;
+        return Book.builder()
+                .id(rs.getInt("id"))
+                .title(rs.getString("title"))
+                .isbn(rs.getString("isbn"))
+                .price(rs.getBigDecimal("price"))
+                .stock(rs.getInt("stock"))
+                .publishedYear(rs.getInt("published_year"))
+                .build();
     }
 
-    public static void main(String[] args) {
-        Book book = new Book();
 
-        book.setTitle("Book 1");
-        book.setIsbn("ISBN 1");
-        book.setPrice(new BigDecimal("4512.45"));
-        book.setStock(1);
-        book.setPublishedYear(1948);
-
-        BookRepositoryImpl bookRepository = new BookRepositoryImpl();
-//        Book book1 = bookRepository.create(book);
-//        System.out.println(book1);
-        System.out.println(bookRepository.count());
-        List<Book> books = bookRepository.retrieveAll();
-        System.out.println(books.toString());
-        bookRepository.deleteById(5);
-
-    }
 }
