@@ -159,12 +159,14 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     }
 
     private OrderItem mapRow(ResultSet rs) throws SQLException {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setId(rs.getInt("id"));
-        orderItem.setOrderId(rs.getInt("order_id"));
-        orderItem.setBookId(rs.getInt("book_id"));
-        orderItem.setQuantity(rs.getInt("quantity"));
-        orderItem.setPrice(rs.getBigDecimal("price"));
-        return orderItem;
+        return OrderItem.builder()
+                .id(rs.getInt("id"))
+                .orderId(rs.getInt("order_id"))
+                .bookId(rs.getInt("book_id"))
+                .quantity(rs.getInt("quantity"))
+                .price(rs.getBigDecimal("price"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
+                .build();
     }
 }
