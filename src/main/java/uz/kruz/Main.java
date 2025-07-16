@@ -9,8 +9,8 @@ public class Main {
 
     public static void main(String[] args) {
         // Create and run the BookStoreAdmin
-//        BookStoreAdmin admin = new BookStoreAdmin();
-//        admin.run();
+        BookStoreAdmin admin = new BookStoreAdmin();
+        admin.run();
         UserRepositoryImpl userRepository = new UserRepositoryImpl();
         userRepository.retrieveAll().forEach(
                 user -> {

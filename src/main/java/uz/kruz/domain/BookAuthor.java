@@ -11,6 +11,7 @@ import uz.kruz.domain.vo.BaseEntity;
 @Data
 @NoArgsConstructor
 public class BookAuthor extends BaseEntity {
+    public String getFullName;
     private Integer bookId;
     private Integer authorId;
 
@@ -36,5 +37,25 @@ public class BookAuthor extends BaseEntity {
     @Override
     public void setId(Integer id) {
         // No-op as this entity uses a composite key
+    }
+
+    @Override
+    public String getEmail() {
+        return "";
+    }
+
+    @Override
+    public String getPassword() {
+        return "";
+    }
+
+    @Override
+    public String getPhone() {
+        return "";
+    }
+
+    @Override
+    public <E extends Enum<E>> Enum<E> getRole() {
+        return null;
     }
 }
