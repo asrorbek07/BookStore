@@ -1,12 +1,14 @@
 package uz.kruz.service;
 
+import uz.kruz.domain.Author;
+import uz.kruz.dto.AuthorDTO;
 import uz.kruz.dto.BaseDTO;
 
 import java.util.List;
 
-public interface AuthorService<D extends BaseDTO> extends Service<D, Integer> {
+public interface AuthorService extends Service<AuthorDTO, Author, Integer> {
 
-    List<D> findByName(String name);
+    List<Author> findByName(String name);
 
-    List<D> findByBookId(Integer bookId);
+    List<Author> findByBookId(Integer bookId);
 }

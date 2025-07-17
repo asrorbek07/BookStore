@@ -1,13 +1,14 @@
 package uz.kruz.service;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Publisher;
+import uz.kruz.dto.PublisherDTO;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PublisherService<D extends BaseDTO> extends Service<D, Integer> {
+public interface PublisherService extends Service<PublisherDTO, Publisher, Integer> {
 
-    Optional<D> findByName(String name);
+    Optional<Publisher> findByName(String name);
 
-    List<D> findByEmail(String email);
+    List<Publisher> findByEmail(String email);
 }

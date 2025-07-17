@@ -1,17 +1,18 @@
 package uz.kruz.service;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Review;
+import uz.kruz.dto.ReviewDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ReviewService<D extends BaseDTO> extends Service<D, Integer> {
+public interface ReviewService extends Service<ReviewDTO, Review, Integer> {
 
-    List<D> findByUserId(Integer userId);
+    List<Review> findByUserId(Integer userId);
 
-    List<D> findByBookId(Integer bookId);
+    List<Review> findByBookId(Integer bookId);
 
-    List<D> findByRatingGreaterThanEqual(Integer rating);
+    List<Review> findByRatingGreaterThanEqual(Integer rating);
 
-    List<D> findByReviewedAtAfter(LocalDateTime date);
+    List<Review> findByReviewedAtAfter(LocalDateTime date);
 }

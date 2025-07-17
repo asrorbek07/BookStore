@@ -1,11 +1,11 @@
 package uz.kruz.service;
 
-import uz.kruz.dto.BaseDTO;
 import uz.kruz.domain.Category;
+import uz.kruz.dto.CategoryDTO;
 
 import java.util.List;
 
-public interface CategoryService<D extends BaseDTO> extends Service<D, Integer> {
+public interface CategoryService extends Service<CategoryDTO, Category, Integer> {
 
-    List<D> findByName(String name);
+    List<Category> findByName(String name);
 }
