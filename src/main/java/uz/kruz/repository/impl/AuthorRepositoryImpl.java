@@ -64,12 +64,6 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     }
 
     @Override
-    public List<Author> retrieveAll() {
-        return List.of();
-    }
-
-
-    @Override
     public boolean deleteById(Integer id) {
         try (PreparedStatement ps = connection.prepareStatement(DELETE_BY_ID)) {
             ps.setInt(1, id);
@@ -109,7 +103,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     }
 
     @Override
-    public List<Author> retrieveAll(String fullName) {
+    public List<Author> retrieveAll() {
         List<Author> authors = new ArrayList<>();
 
         try (Statement stms = connection.createStatement()) {
