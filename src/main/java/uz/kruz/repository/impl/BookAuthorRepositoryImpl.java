@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.awt.event.PaintEvent.UPDATE;
+import static java.nio.file.attribute.AclEntryPermission.DELETE;
+import static javax.swing.text.html.HTML.Tag.SELECT;
+
 public class BookAuthorRepositoryImpl implements BookAuthorRepository {
 
     private final Connection connection;
@@ -35,10 +39,20 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
         }
     }
 
+
     @Override
     public Optional<BookAuthor> retrieveById(Integer id) {
-        // Jadvalda id yo‘q bo‘lsa, bu metod ishlamaydi
-        throw new UnsupportedOperationException("book_authors jadvalida id ustuni mavjud emas.");
+        String sql = "SELECT * FROM book_authors WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving book_authors by id", e);
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -58,17 +72,43 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
 
     @Override
     public List<BookAuthor> retrieveAll(String name) {
-        throw new UnsupportedOperationException("This method requires JOIN with author table.");
+        List<BookAuthor> list = new ArrayList<>();
+        String sql = "SELECT * from book_author";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving book_authors by author name", e);
+        }
+        return list;
     }
 
+
     @Override
-    public boolean deleteById(Integer id) {
-        throw new UnsupportedOperationException("book_authors jadvalida id ustuni mavjud emas.");
+    public boolean deleteById(Integer book_id) {
+        String sql = "DELETE FROM book_authors WHERE book_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, book_id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting book_authors", e);
+        }
     }
 
     @Override
     public BookAuthor update(BookAuthor entity) {
-        throw new UnsupportedOperationException("book_authors jadvalida id ustuni mavjud emas.");
+        String UPDATE = "UPDATE book_authors SET book_id = ?, author_id = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
+           ps.setInt(1, entity.getBookId());
+           ps.setInt(2, entity.getAuthorId());
+           ps.setInt(3, entity.getId());
+           ps.executeUpdate();
+            return entity;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating book_author", e);
+        }
     }
 
     @Override
@@ -142,14 +182,15 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
 
         public static void main(String[] args) {
         BookAuthorRepository bookAuthorRepository = new BookAuthorRepositoryImpl();
-        bookAuthorRepository.retrieveAll().forEach(
-                bookAuthor -> {
-                    System.out.println("Publisher ID: " + bookAuthor.getBookId());
-                    System.out.println("Publisher Name: " + bookAuthor.getAuthorId());
-
-                    System.out.println("-----------------------------");
-
-                }
-        );
+//        bookAuthorRepository.retrieveAll().forEach(
+//                bookAuthor -> {
+//                    System.out.println("Publisher ID: " + bookAuthor.getBookId());
+//                    System.out.println("Publisher Name: " + bookAuthor.getAuthorId());
+//
+//                    System.out.println("-----------------------------");
+//
+//                }
+//        );
+            bookAuthorRepository.deleteById(5);
     }
 }
