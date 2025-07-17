@@ -37,7 +37,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public Publisher modify(PublisherDTO dto) {
+    public Publisher modify(PublisherDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

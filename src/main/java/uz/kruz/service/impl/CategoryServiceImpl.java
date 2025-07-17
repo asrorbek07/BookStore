@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category modify(CategoryDTO dto) {
+    public Category modify(CategoryDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

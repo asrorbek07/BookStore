@@ -38,7 +38,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review modify(ReviewDTO dto) {
+    public Review modify(ReviewDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

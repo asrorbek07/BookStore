@@ -37,7 +37,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public OrderItem modify(OrderItemDTO dto) {
+    public OrderItem modify(OrderItemDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

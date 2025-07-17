@@ -39,7 +39,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     @Override
-    public Shipment modify(ShipmentDTO dto) {
+    public Shipment modify(ShipmentDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

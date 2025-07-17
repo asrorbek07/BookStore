@@ -1,7 +1,6 @@
 package uz.kruz.service.impl;
 
 import uz.kruz.domain.Book;
-import uz.kruz.dto.BaseDTO;
 import uz.kruz.dto.BookDTO;
 import uz.kruz.repository.BookRepository;
 import uz.kruz.service.BookService;
@@ -38,7 +37,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book modify(BookDTO dto) {
+    public Book modify(BookDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

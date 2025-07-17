@@ -37,7 +37,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Author modify(AuthorDTO dto) {
+    public Author modify(AuthorDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

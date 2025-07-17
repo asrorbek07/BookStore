@@ -15,7 +15,7 @@ public interface Service<D extends BaseDTO, T, ID> {
 
     boolean removeById(ID id);
 
-    T modify(D dto);
+    T modify(D dto, ID id);
 
     long count();
 }
