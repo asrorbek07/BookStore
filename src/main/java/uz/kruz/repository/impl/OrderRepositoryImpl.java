@@ -191,12 +191,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     private Order mapRow(ResultSet rs) throws SQLException {
-        Order order = new Order();
-        order.setId(rs.getInt("id"));
-        order.setUserId(rs.getInt("user_id"));
-        order.setTotalAmount(rs.getBigDecimal("total_amount"));
-        order.setStatus(OrderStatus.valueOf(rs.getString("status")));
-        return order;
+        return Order.builder()
+                .id(rs.getInt("id"))
+                .userId(rs.getInt("user_id"))
+                .totalAmount(rs.getBigDecimal("total_amount"))
+                .status(OrderStatus.valueOf(rs.getString("status")))
+                .build();
     }
 //public static void main(String[] args) {
 //
