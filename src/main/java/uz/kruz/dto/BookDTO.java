@@ -1,8 +1,7 @@
 package uz.kruz.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,8 +11,9 @@ import java.util.List;
  * DTO for the Book entity.
  */
 @EqualsAndHashCode(callSuper = true)
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@SuperBuilder
 public class BookDTO extends BaseDTO {
     private String title;
     private String isbn;
@@ -25,19 +25,4 @@ public class BookDTO extends BaseDTO {
     private List<Integer> authorIds; // Only store IDs of related authors, not the full objects
     private List<Integer> reviewIds; // Only store IDs of related reviews, not the full objects
 
-    public BookDTO(Integer id, String title, String isbn, BigDecimal price, Integer stock, 
-                  Integer publishedYear, Integer categoryId, Integer publisherId, 
-                  LocalDateTime createdAt, LocalDateTime updatedAt,
-                  List<Integer> authorIds, List<Integer> reviewIds) {
-        super(id, createdAt, updatedAt);
-        this.title = title;
-        this.isbn = isbn;
-        this.price = price;
-        this.stock = stock;
-        this.publishedYear = publishedYear;
-        this.categoryId = categoryId;
-        this.publisherId = publisherId;
-        this.authorIds = authorIds;
-        this.reviewIds = reviewIds;
-    }
 }

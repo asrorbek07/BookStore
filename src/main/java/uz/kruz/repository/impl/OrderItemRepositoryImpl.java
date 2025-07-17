@@ -10,7 +10,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class OrderItemRepositoryImpl implements OrderItemRepository {
-
+    private final String INSERT = "INSERT INTO order_items(order_id, book_id, quantity, price) VALUES(?, ?, ?, ?)";
+    private final String SELECT = "SELECT * FROM order_items WHERE order_id = ?";
+    private final String SELECT_ALL = "SELECT * FROM order_items";
+    private final String DELETE = "DELETE FROM order_items WHERE id = ?";
+    private final String UPDATE = "UPDATE order_items SET quantity = ?, price = ? WHERE id = ?";
+    private final String COUNT = "SELECT COUNT(*) FROM order_items";
+    private final String SELECT_BY_ORDER = "SELECT * FROM order_items WHERE order_id = ?";
+    private final String SELECT_BY_BOOK = "SELECT * FROM order_items WHERE book_id = ?";
+    private final String SELECT_BY_QUANTITY = "SELECT * FROM order_items WHERE quantity > ?";
     private final Connection connection;
 
     public OrderItemRepositoryImpl() {
@@ -23,8 +31,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 
     @Override
     public OrderItem create(OrderItem entity) {
-        String sql = "INSERT INTO order_items(order_id, book_id, quantity, price) VALUES(?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, entity.getOrderId());
             ps.setInt(2, entity.getBookId());
             ps.setInt(3, entity.getQuantity());
@@ -36,18 +44,18 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             }
             return entity;
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented");
+            throw new UnsupportedOperationException("Method not implemented",e);
         }
 
     }
 
     @Override
     public Optional<OrderItem> retrieveById(Integer id) {
-        String sql = "SELECT * FROM order_items WHERE order_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1,id);
+
+        try (PreparedStatement ps = connection.prepareStatement(SELECT)) {
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 return Optional.of(mapRow(rs));
             }
         } catch (SQLException e) {
@@ -59,9 +67,9 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @Override
     public List<OrderItem> retrieveAll() {
         List<OrderItem> orderItems = new ArrayList<>();
-        String sql = "SELECT * FROM order_items";
+
         try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(SELECT_ALL);
             while (rs.next()) {
                 orderItems.add(mapRow(rs));
             }
@@ -69,13 +77,13 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             throw new UnsupportedOperationException("Method not implemented");
         }
         return orderItems;
-        }
+    }
 
     @Override
     public boolean deleteById(Integer id) {
-        String sql = "DELETE FROM order_items WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1,id);
+
+        try (PreparedStatement ps = connection.prepareStatement(DELETE)) {
+            ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new UnsupportedOperationException("Method not implemented", e);
@@ -84,8 +92,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 
     @Override
     public OrderItem update(OrderItem entity) {
-        String sql = "UPDATE order_items SET quantity = ?, price = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setInt(1, entity.getQuantity());
             ps.setBigDecimal(2, entity.getPrice());
             ps.setInt(3, entity.getId());
@@ -98,9 +106,9 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 
     @Override
     public long count() {
-        String sql = "SELECT COUNT(*) FROM order_items";
+
         try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(COUNT);
             if (rs.next()) {
                 return rs.getLong(1);
             }
@@ -113,8 +121,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @Override
     public List<OrderItem> retrieveByOrderId(Integer orderId) {
         List<OrderItem> orderItems = new ArrayList<>();
-        String sql = "SELECT * FROM order_items WHERE order_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ORDER)) {
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -129,8 +137,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @Override
     public List<OrderItem> retrieveByBookId(Integer bookId) {
         List<OrderItem> orderItems = new ArrayList<>();
-        String sql = "SELECT * FROM order_items WHERE book_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_BOOK)) {
             ps.setInt(1, bookId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -145,8 +153,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @Override
     public List<OrderItem> retrieveByQuantityGreaterThan(Integer quantity) {
         List<OrderItem> orderItems = new ArrayList<>();
-        String sql = "SELECT * FROM order_items WHERE quantity > ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_QUANTITY)) {
             ps.setInt(1, quantity);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -159,12 +167,28 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     }
 
     private OrderItem mapRow(ResultSet rs) throws SQLException {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setId(rs.getInt("id"));
-        orderItem.setOrderId(rs.getInt("order_id"));
-        orderItem.setBookId(rs.getInt("book_id"));
-        orderItem.setQuantity(rs.getInt("quantity"));
-        orderItem.setPrice(rs.getBigDecimal("price"));
-        return orderItem;
+        return OrderItem.builder()
+                .id(rs.getInt("id"))
+                .orderId(rs.getInt("order_id"))
+                .bookId(rs.getInt("book_id"))
+                .quantity(rs.getInt("quantity"))
+                .price(rs.getBigDecimal("price"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
+                .build();
     }
+
+//    public static void main(String[] args) {
+//        OrderItemRepository orderItemRepository = new OrderItemRepositoryImpl();
+//        orderItemRepository.retrieveAll().forEach(
+//                orderItem -> {
+//                    System.out.println("Order ID: " + orderItem.getId());
+//                    System.out.println("Order Book ID: " + orderItem.getBookId());
+//                    System.out.println("Order quantity: " + orderItem.getQuantity());
+//                    System.out.println("Order price: " + orderItem.getPrice());
+//                    System.out.println("-----------------------------");
+//
+//                }
+//        );
+//    }
 }

@@ -163,13 +163,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private User mapRow(ResultSet rs) throws SQLException {
-        User user = new User();
-        user.setId(rs.getInt("id"));
-        user.setFullName(rs.getString("full_name"));
-        user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
-        user.setPhone(rs.getString("phone"));
-        user.setRole(UserRole.valueOf(rs.getString("role")));
-        return user;
+        return User.builder()
+                .id(rs.getInt("id"))
+                .fullName(rs.getString("full_name"))
+                .email(rs.getString("email"))
+                .password(rs.getString("password"))
+                .phone(rs.getString("phone"))
+                .role(UserRole.valueOf(rs.getString("role")))
+                .build();
     }
 }

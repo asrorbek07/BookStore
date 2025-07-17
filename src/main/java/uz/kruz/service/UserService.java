@@ -1,16 +1,17 @@
 package uz.kruz.service;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.User;
 import uz.kruz.domain.vo.UserRole;
+import uz.kruz.dto.UserDTO;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService<D extends BaseDTO> extends Service<D, Integer> {
+public interface UserService extends Service<UserDTO, User, Integer> {
 
-    Optional<D> findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
-    List<D> findByName(String name);
+    List<User> findByName(String name);
 
-    List<D> findByRole(UserRole role);
+    List<User> findByRole(UserRole role);
 }
