@@ -1,14 +1,15 @@
 package uz.kruz.service.impl;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.User;
 import uz.kruz.domain.vo.UserRole;
+import uz.kruz.dto.UserDTO;
 import uz.kruz.repository.UserRepository;
 import uz.kruz.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
 
-public class UserServiceImpl<D extends BaseDTO> implements UserService<D> {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
@@ -17,17 +18,17 @@ public class UserServiceImpl<D extends BaseDTO> implements UserService<D> {
     }
 
     @Override
-    public D register(D dto) {
+    public User register(UserDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public Optional<D> findById(Integer id) {
+    public Optional<User> findById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findAll() {
+    public List<User> findAll() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -37,7 +38,7 @@ public class UserServiceImpl<D extends BaseDTO> implements UserService<D> {
     }
 
     @Override
-    public D modify(D dto) {
+    public User modify(UserDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -47,17 +48,17 @@ public class UserServiceImpl<D extends BaseDTO> implements UserService<D> {
     }
 
     @Override
-    public Optional<D> findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByName(String name) {
+    public List<User> findByName(String name) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByRole(UserRole role) {
+    public List<User> findByRole(UserRole role) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

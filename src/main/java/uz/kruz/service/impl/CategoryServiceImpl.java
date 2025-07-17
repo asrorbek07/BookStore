@@ -1,13 +1,14 @@
 package uz.kruz.service.impl;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Category;
+import uz.kruz.dto.CategoryDTO;
 import uz.kruz.repository.CategoryRepository;
 import uz.kruz.service.CategoryService;
 
 import java.util.List;
 import java.util.Optional;
 
-public class CategoryServiceImpl<D extends BaseDTO> implements CategoryService<D> {
+public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
@@ -16,17 +17,17 @@ public class CategoryServiceImpl<D extends BaseDTO> implements CategoryService<D
     }
 
     @Override
-    public D register(D dto) {
+    public Category register(CategoryDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public Optional<D> findById(Integer id) {
+    public Optional<Category> findById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findAll() {
+    public List<Category> findAll() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -36,7 +37,7 @@ public class CategoryServiceImpl<D extends BaseDTO> implements CategoryService<D
     }
 
     @Override
-    public D modify(D dto) {
+    public Category modify(CategoryDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -46,7 +47,7 @@ public class CategoryServiceImpl<D extends BaseDTO> implements CategoryService<D
     }
 
     @Override
-    public List<D> findByName(String name) {
+    public List<Category> findByName(String name) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

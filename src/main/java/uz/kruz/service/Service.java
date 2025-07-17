@@ -5,17 +5,17 @@ import uz.kruz.dto.BaseDTO;
 import java.util.List;
 import java.util.Optional;
 
-public interface Service<D extends BaseDTO, ID> {
+public interface Service<D extends BaseDTO, T, ID> {
 
-    D register(D dto);
+    T register(D dto);
 
-    Optional<D> findById(ID id);
+    Optional<T> findById(ID id);
 
-    List<D> findAll();
+    List<T> findAll();
 
     boolean removeById(ID id);
 
-    D modify(D dto);
+    T modify(D dto);
 
     long count();
 }

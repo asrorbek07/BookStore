@@ -1,7 +1,8 @@
 package uz.kruz.service.impl;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Order;
 import uz.kruz.domain.vo.OrderStatus;
+import uz.kruz.dto.OrderDTO;
 import uz.kruz.repository.OrderRepository;
 import uz.kruz.service.OrderService;
 
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class OrderServiceImpl<D extends BaseDTO> implements OrderService<D> {
+public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
@@ -18,17 +19,17 @@ public class OrderServiceImpl<D extends BaseDTO> implements OrderService<D> {
     }
 
     @Override
-    public D register(D dto) {
+    public Order register(OrderDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public Optional<D> findById(Integer id) {
+    public Optional<Order> findById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findAll() {
+    public List<Order> findAll() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -38,7 +39,7 @@ public class OrderServiceImpl<D extends BaseDTO> implements OrderService<D> {
     }
 
     @Override
-    public D modify(D dto) {
+    public Order modify(OrderDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -48,22 +49,22 @@ public class OrderServiceImpl<D extends BaseDTO> implements OrderService<D> {
     }
 
     @Override
-    public List<D> findByUserId(Integer userId) {
+    public List<Order> findByUserId(Integer userId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByStatus(OrderStatus status) {
+    public List<Order> findByStatus(OrderStatus status) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByOrderDateAfter(LocalDateTime date) {
+    public List<Order> findByOrderDateAfter(LocalDateTime date) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByTotalAmountGreaterThan(Double amount) {
+    public List<Order> findByTotalAmountGreaterThan(Double amount) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }
