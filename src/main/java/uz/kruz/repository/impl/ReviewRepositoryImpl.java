@@ -177,15 +177,14 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     }
 
 
-
     private Review mapRow(ResultSet rs) throws SQLException {
-        Review review = new Review();
-        review.setId(rs.getInt("id"));
-        review.setUserId(rs.getInt("user_id"));
-        review.setBookId(rs.getInt("book_id"));
-        review.setRating(rs.getInt("rating"));
-        review.setComment(rs.getString("comment"));
-        return review;
+        return Review.builder()
+                .id(rs.getInt(1))
+                .userId(rs.getInt("user_id"))
+                .bookId(rs.getInt("book_id"))
+                .rating(rs.getInt("rating"))
+                .comment(rs.getString("comment"))
+                .build();
     }
 
     public static void main(String[] args) {
