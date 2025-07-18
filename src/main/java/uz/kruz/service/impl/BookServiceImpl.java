@@ -19,7 +19,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book register(BookDTO dto) {
-        if (StringUtil.isEmpty(dto.getIsbn())){
+        if (StringUtil.isEmpty(dto.getIsbn())&&
+        bookRepository.retrieveByIsbn(dto.getIsbn()).isPresent()
+        ){
 
         }
 
