@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.awt.event.PaintEvent.UPDATE;
+import static java.nio.file.attribute.AclEntryPermission.DELETE;
+import static javax.swing.text.html.HTML.Tag.SELECT;
+
 public class BookAuthorRepositoryImpl implements BookAuthorRepository {
 
     private final Connection connection;
@@ -24,116 +28,169 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
 
     @Override
     public BookAuthor create(BookAuthor entity) {
-        String sql = "INSERT INTO book_authors (book_id, auther_id, created_id, upload_id) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, entity.getAuthorId());
-            ps.setTimestamp(2, Timestamp.valueOf(entity.getCreatedAt()));
-            ps.setTimestamp(3, Timestamp.valueOf(entity.getUpdatedAt()));
+        String sql = "INSERT INTO book_authors (book_id, author_id) VALUES (?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, entity.getBookId());
+            ps.setInt(2, entity.getAuthorId());
             ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                entity.setId(rs.getInt(1));
-            }
             return entity;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create book author", e);
+            throw new RuntimeException("Failed to create book_authors", e);
         }
     }
 
+
     @Override
     public Optional<BookAuthor> retrieveById(Integer id) {
-        String sql = "SELECT * FROM BookAuthor WHERE id = ?";
+        String sql = "SELECT * FROM book_authors WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                BookAuthor bookAuthor = mapRow(rs);
-                return Optional.of(bookAuthor);
+                return Optional.of(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving BookAuthor by id", e);
+            throw new RuntimeException("Error retrieving book_authors by id", e);
         }
         return Optional.empty();
     }
 
     @Override
     public List<BookAuthor> retrieveAll() {
-        return List.of();
-    }
-
-    private BookAuthor mapRow(ResultSet rs) {
-        return null;
+        List<BookAuthor> list = new ArrayList<>();
+        String sql = "SELECT * FROM book_authors";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving all book_authors", e);
+        }
+        return list;
     }
 
     @Override
     public List<BookAuthor> retrieveAll(String name) {
-        List<BookAuthor> BookAuthors = new ArrayList<>();
-        String sql = "SELECT * FROM BookAuthor WHERE Author_name LIKE ?";
+        List<BookAuthor> list = new ArrayList<>();
+        String sql = "SELECT * from book_author";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, "%" + name + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                BookAuthors.add(mapRow(rs));
+                list.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving BookAuthor by name", e);
+            throw new RuntimeException("Error retrieving book_authors by author name", e);
         }
-        return BookAuthors;
+        return list;
     }
 
+
     @Override
-    public boolean deleteById(Integer id) {
-        String sql = "DELETE FROM Books WHERE id = ?";
+    public boolean deleteById(Integer book_id) {
+        String sql = "DELETE FROM book_authors WHERE book_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setInt(1, book_id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting Books", e);
+            throw new RuntimeException("Error deleting book_authors", e);
         }
     }
 
     @Override
     public BookAuthor update(BookAuthor entity) {
-        String sql = "UPDATE BookAuthor SET bookId = ?, authorId = ?, book = ?, author = ? where id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, String.valueOf(entity.getBookId()));
-            ps.setString(2,String.valueOf(entity.getAuthorId()));
-            ps.setString(3, String.valueOf(entity.getBook()));
-            ps.setString(4,String.valueOf(entity.getAuthor()));
-            ps.executeUpdate();
+        String UPDATE = "UPDATE book_authors SET book_id = ?, author_id = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
+           ps.setInt(1, entity.getBookId());
+           ps.setInt(2, entity.getAuthorId());
+           ps.setInt(3, entity.getId());
+           ps.executeUpdate();
             return entity;
         } catch (SQLException e) {
-            throw new RuntimeException("throw updating book", e);
+            throw new RuntimeException("Error updating book_author", e);
         }
     }
 
     @Override
     public long count() {
         String sql = "SELECT COUNT(*) FROM book_authors";
-        try (Statement stmt = (Statement) connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(sql);
-            if(rs.next()) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
                 return rs.getLong(1);
             }
-            } catch (SQLException e) {
-            throw new RuntimeException("Error counting bookAuthors", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error counting book_authors", e);
         }
         return 0;
     }
 
     @Override
     public List<BookAuthor> retrieveByBookId(Integer bookId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        List<BookAuthor> list = new ArrayList<>();
+        String sql = "SELECT * FROM book_authors WHERE book_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving book_authors by bookId", e);
+        }
+        return list;
     }
 
     @Override
     public List<BookAuthor> retrieveByAuthorId(Integer authorId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        List<BookAuthor> list = new ArrayList<>();
+        String sql = "SELECT * FROM book_authors WHERE author_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, authorId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving book_authors by authorId", e);
+        }
+        return list;
     }
 
     @Override
     public Optional<BookAuthor> retrieveByBookIdAndAuthorId(Integer bookId, Integer authorId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        String sql = "SELECT * FROM book_authors WHERE book_id = ? AND author_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ps.setInt(2, authorId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error retrieving book_authors by bookId and authorId", e);
+        }
+        return Optional.empty();
+    }
+
+    private BookAuthor mapRow(ResultSet rs) throws SQLException {
+        return BookAuthor.builder()
+                .bookId(rs.getInt("book_id"))
+                .authorId(rs.getInt("author_id"))
+                .build();
+    }
+
+        public static void main(String[] args) {
+        BookAuthorRepository bookAuthorRepository = new BookAuthorRepositoryImpl();
+//        bookAuthorRepository.retrieveAll().forEach(
+//                bookAuthor -> {
+//                    System.out.println("Publisher ID: " + bookAuthor.getBookId());
+//                    System.out.println("Publisher Name: " + bookAuthor.getAuthorId());
+//
+//                    System.out.println("-----------------------------");
+//
+//                }
+//        );
+            bookAuthorRepository.deleteById(5);
     }
 }

@@ -4,6 +4,7 @@ import uz.kruz.domain.Book;
 import uz.kruz.dto.BookDTO;
 import uz.kruz.repository.BookRepository;
 import uz.kruz.service.BookService;
+import uz.kruz.util.StringUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,13 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book register(BookDTO dto) {
+        if (StringUtil.isEmpty(dto.getIsbn())&&
+        bookRepository.retrieveByIsbn(dto.getIsbn()).isPresent()
+        ){
+
+        }
+
+
         throw new UnsupportedOperationException("Method not implemented");
     }
 
