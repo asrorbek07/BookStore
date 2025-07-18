@@ -8,10 +8,8 @@ import uz.kruz.service.AuthorService;
 import uz.kruz.util.StringUtil;
 
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.sql.*;
+import java.util.*;
 
 public class AuthorServiceImpl implements AuthorService {
 
@@ -41,17 +39,22 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public Optional<Author> findById(Integer id) {
 
-        throw new UnsupportedOperationException("Method not implemented");
+
+        return authorRepository.retrieveById(id);
+
+
     }
 
     @Override
     public List<Author> findAll() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return authorRepository.retrieveAll();
+
     }
 
     @Override
     public boolean removeById(Integer id) {
-        throw new UnsupportedOperationException("Method not implemented");
+
+        return authorRepository.deleteById(id);
     }
 
     @Override
@@ -65,16 +68,52 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public long count() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return authorRepository.count();
     }
+
 
     @Override
     public List<Author> findByName(String name) {
-        throw new UnsupportedOperationException("Method not implemented");
+        if (name==null|| StringUtil.isEmpty(name)) {
+            throw new IllegalArgumentException("name must not be empty or null");
+
+        }
+        return authorRepository.retrieveByName(name);
     }
+
 
     @Override
     public List<Author> findByBookId(Integer bookId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        if (bookId == null) {
+            throw new IllegalArgumentException("bookId bo'sh bo'lmasligi kerak");
+        }
+
+        List<Author> authors = new ArrayList<>();
+        String SELECT_FIND_BY_BOOK_ID = "SELECT * FROM author WHERE book_id = ?";
+
+        try (
+                Connection connection = DriverManager.getConnection(
+                        "jdbc:mariadb://localhost:3306/your_database",
+                        "your_username",
+                        "your_password"
+                );
+                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_FIND_BY_BOOK_ID)
+        ) {
+            preparedStatement.setInt(1, bookId);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                Author author = new Author();
+                author.setId(rs.getLong("id"));
+                author.setFullName(rs.getString("name"));
+                authors.add(author);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return authors;
     }
+
 }
