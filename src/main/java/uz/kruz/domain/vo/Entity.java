@@ -16,11 +16,4 @@ public interface Entity {
 
     void setUpdatedAt(LocalDateTime updatedAt);
 
-    String getEmail();
-
-    String getPassword();
-
-    String getPhone();
-
-    <E extends Enum<E>> Enum<E> getRole();
 }
