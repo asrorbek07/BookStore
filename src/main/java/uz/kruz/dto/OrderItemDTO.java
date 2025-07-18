@@ -10,4 +10,8 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class OrderItemDTO extends BaseDTO {
+    private Integer orderId;
+    private Integer bookId;
+    private Integer quantity;
+    private Double price;
 }
