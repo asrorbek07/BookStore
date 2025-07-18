@@ -1,13 +1,14 @@
 package uz.kruz.service.impl;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Publisher;
+import uz.kruz.dto.PublisherDTO;
 import uz.kruz.repository.PublisherRepository;
 import uz.kruz.service.PublisherService;
 
 import java.util.List;
 import java.util.Optional;
 
-public class PublisherServiceImpl<D extends BaseDTO> implements PublisherService<D> {
+public class PublisherServiceImpl implements PublisherService {
 
     private final PublisherRepository publisherRepository;
 
@@ -16,17 +17,17 @@ public class PublisherServiceImpl<D extends BaseDTO> implements PublisherService
     }
 
     @Override
-    public D register(D dto) {
+    public Publisher register(PublisherDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public Optional<D> findById(Integer id) {
+    public Optional<Publisher> findById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findAll() {
+    public List<Publisher> findAll() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -36,7 +37,7 @@ public class PublisherServiceImpl<D extends BaseDTO> implements PublisherService
     }
 
     @Override
-    public D modify(D dto) {
+    public Publisher modify(PublisherDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -46,12 +47,12 @@ public class PublisherServiceImpl<D extends BaseDTO> implements PublisherService
     }
 
     @Override
-    public Optional<D> findByName(String name) {
+    public Optional<Publisher> findByName(String name) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByEmail(String email) {
+    public List<Publisher> findByEmail(String email) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

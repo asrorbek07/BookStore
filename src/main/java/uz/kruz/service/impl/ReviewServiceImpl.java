@@ -1,6 +1,7 @@
 package uz.kruz.service.impl;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Review;
+import uz.kruz.dto.ReviewDTO;
 import uz.kruz.repository.ReviewRepository;
 import uz.kruz.service.ReviewService;
 
@@ -8,61 +9,61 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class ReviewServiceImpl<D extends BaseDTO> implements ReviewService<D> {
-    
+public class ReviewServiceImpl implements ReviewService {
+
     private final ReviewRepository reviewRepository;
-    
+
     public ReviewServiceImpl(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
     }
-    
+
     @Override
-    public D register(D dto) {
+    public Review register(ReviewDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
-    public Optional<D> findById(Integer id) {
+    public Optional<Review> findById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
-    public List<D> findAll() {
+    public List<Review> findAll() {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
     public boolean removeById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
-    public D modify(D dto) {
+    public Review modify(ReviewDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
     public long count() {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
-    public List<D> findByUserId(Integer userId) {
+    public List<Review> findByUserId(Integer userId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
-    public List<D> findByBookId(Integer bookId) {
+    public List<Review> findByBookId(Integer bookId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
-    public List<D> findByRatingGreaterThanEqual(Integer rating) {
+    public List<Review> findByRatingGreaterThanEqual(Integer rating) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
-    public List<D> findByReviewedAtAfter(LocalDateTime date) {
+    public List<Review> findByReviewedAtAfter(LocalDateTime date) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

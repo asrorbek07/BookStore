@@ -1,14 +1,16 @@
 package uz.kruz.service;
 
+import uz.kruz.domain.OrderItem;
 import uz.kruz.dto.BaseDTO;
+import uz.kruz.dto.OrderItemDTO;
 
 import java.util.List;
 
-public interface OrderItemService<D extends BaseDTO> extends Service<D, Integer> {
+public interface OrderItemService extends Service<OrderItemDTO, OrderItem, Integer> {
 
-    List<D> findByOrderId(Integer orderId);
+    List<OrderItem> findByOrderId(Integer orderId);
 
-    List<D> findByBookId(Integer bookId);
+    List<OrderItem> findByBookId(Integer bookId);
 
-    List<D> findByQuantityGreaterThan(Integer quantity);
+    List<OrderItem> findByQuantityGreaterThan(Integer quantity);
 }

@@ -1,19 +1,20 @@
 package uz.kruz.service;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Shipment;
+import uz.kruz.dto.ShipmentDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface ShipmentService<D extends BaseDTO> extends Service<D, Integer> {
+public interface ShipmentService extends Service<ShipmentDTO, Shipment, Integer> {
 
-    Optional<D> findByTrackingNumber(String trackingNumber);
+    Optional<Shipment> findByTrackingNumber(String trackingNumber);
 
-    List<D> findByOrderId(Integer orderId);
+    List<Shipment> findByOrderId(Integer orderId);
 
-    List<D> findByShippedAtAfter(LocalDateTime date);
+    List<Shipment> findByShippedAtAfter(LocalDateTime date);
 
-    List<D> findByDeliveryEstimateBefore(LocalDate date);
+    List<Shipment> findByDeliveryEstimateBefore(LocalDate date);
 }
