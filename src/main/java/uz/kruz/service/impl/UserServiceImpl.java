@@ -18,6 +18,7 @@ public class UserServiceImpl<D extends BaseDTO> implements UserService<D> {
 
     @Override
     public D register(D dto) {
+
         throw new UnsupportedOperationException("Method not implemented");
     }
 
