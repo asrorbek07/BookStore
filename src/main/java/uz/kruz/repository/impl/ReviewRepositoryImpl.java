@@ -2,8 +2,6 @@ package uz.kruz.repository.impl;
 
 import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Review;
-import uz.kruz.domain.User;
-import uz.kruz.domain.vo.UserRole;
 import uz.kruz.repository.ReviewRepository;
 
 import java.sql.*;
@@ -13,24 +11,16 @@ import java.util.List;
 import java.util.Optional;
 
 public class ReviewRepositoryImpl implements ReviewRepository {
-
+    private final String CREATE = "INSERT INTO reviews (user_id, book_id, rating, comment) values (?, ?, ?, ?)";
+    private final String SELECT = "SELECT * FROM reviews WHERE user_id = ?";
+    private final String SELECT_ALL = "SELECT * FROM reviews";
+    private final String DELETE = "DELETE FROM reviews WHERE id = ?";
+    private final String UPDATE = "UPDATE reviews SET user_id = ?, book_id = ?, rating = ?, comment = ? WHERE id = ?";
+    private final String COUNT = "SELECT COUNT(*) FROM reviews";
+    private final String SELECT_BY_USER_ID = "SELECT * FROM reviews WHERE user_id = ?";
+    private final String SELECT_ALL_BY_BOOK_ID = "SELECT * FROM reviews WHERE book_id LIKE ?";
+    private final String SELECT_ALL_BY_rating = "SELECT * FROM reviews WHERE rating >= ?";
     private final Connection connection;
-    private final String SELECT_REVIEW_BYID = "select * from reviews where id = ?";
-    private final String SELECT_REVIEW_ALL = "select * from reviews";
-    private final String DELETE_REVIEW = "delete from reviews where id = ?";
-    private final String UPDATE = "update reviews set user_id = ?, book_id = ?, rating = ? where id = ?";
-    private final String COUNT_REVIEW = "select count(*) from reviews";
-    private final String SELECT_REVIEW_USER_ID = "select * from reviews where user_id = ?";
-    private final String SELECT_REVIEW_BOOKID = "select * from reviews where book_id = ?";
-    private final String BY_RATING_GREATER = "select * from reviews where rating = ?";
-    private final String BYREVIEWED_AT = "select * from reviews where reviewed_at = ?";
-
-
-
-
-
-
-
 
     public ReviewRepositoryImpl() {
         try {
@@ -41,12 +31,11 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     }
 
     @Override
-    public Review create(Review entity) {
-        final String INSERT = "insert into reviews (user_id, book_id, rating, comment) VALUES (?,?,?,?)";
-        try (PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
+    public Review create(Review entity) { //ok
+        try (PreparedStatement ps = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, entity.getUserId());
             ps.setInt(2, entity.getBookId());
-            ps.setDouble(3, entity.getRating());
+            ps.setInt(3, entity.getRating());
             ps.setString(4, entity.getComment());
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
@@ -54,24 +43,21 @@ public class ReviewRepositoryImpl implements ReviewRepository {
                 entity.setId(rs.getInt(1));
             }
             return entity;
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new UnsupportedOperationException("Method not implemented");
         }
     }
 
     @Override
-    public Optional<Review> retrieveById(Integer id) {
-
-        try (PreparedStatement ps = connection.prepareStatement(SELECT_REVIEW_BYID)) {
+    public Optional<Review> retrieveById(Integer id) {     //oke
+        try (PreparedStatement ps = connection.prepareStatement(SELECT)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapRow(rs));
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error retrieving Review by id", e);
         }
         return Optional.empty();
     }
@@ -79,24 +65,25 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     @Override
     public List<Review> retrieveAll() {
         List<Review> reviews = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
-            ResultSet rs = statement.executeQuery(SELECT_REVIEW_ALL);
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(SELECT_ALL);
             while (rs.next()) {
                 reviews.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error retrieving all Review", e);
         }
         return reviews;
     }
 
+
     @Override
     public boolean deleteById(Integer id) {
-        try (PreparedStatement ps = connection.prepareStatement(DELETE_REVIEW)) {
+        try (PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error deleting Review", e);
         }
     }
 
@@ -105,110 +92,108 @@ public class ReviewRepositoryImpl implements ReviewRepository {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setInt(1, entity.getUserId());
             ps.setInt(2, entity.getBookId());
-            ps.setDouble(3, entity.getRating());
-            ps.setInt(4, entity.getId());
+            ps.setInt(3, entity.getRating());
+            ps.setString(4, entity.getComment());
             ps.executeUpdate();
             return entity;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error updating Review", e);
         }
-
     }
 
     @Override
     public long count() {
-        try (Statement statement = connection.createStatement()) {
-            ResultSet rs = statement.executeQuery(COUNT_REVIEW);
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(COUNT);
             if (rs.next()) {
                 return rs.getLong(1);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error counting Review", e);
         }
         return 0;
     }
 
     @Override
-    public List<Review> retrieveByUserId(Integer userId) {
-        List<Review> reviews = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT_REVIEW_USER_ID)) {
+    public Optional<Review> retrieveByUserId(Integer userId) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_USER_ID)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                reviews.add(mapRow(rs));
-
+            if (rs.next()) {
+                return Optional.of(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error retrieving Review by email", e);
         }
-        return reviews;
+        return Optional.empty();
     }
+
 
     @Override
     public List<Review> retrieveByBookId(Integer bookId) {
         List<Review> reviews = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(SELECT_REVIEW_BOOKID)) {
-            ps.setInt(1, bookId);
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_ALL_BY_BOOK_ID)) {
+            ps.setString(1, "%" + ps + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 reviews.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error retrieving Review by name", e);
         }
         return reviews;
     }
+
 
     @Override
     public List<Review> retrieveByRatingGreaterThanEqual(Integer rating) {
         List<Review> reviews = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(BY_RATING_GREATER)) {
-            ps.setInt(1, rating);
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_ALL_BY_rating)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 reviews.add(mapRow(rs));
-
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error retrieving Review by role", e);
         }
         return reviews;
     }
 
+
     @Override
     public List<Review> retrieveByReviewedAtAfter(LocalDateTime date) {
         List<Review> reviews = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(BYREVIEWED_AT)) {
+        String SELECT_BY_REVIEWED_AT_AFTER = "SELECT * FROM reviews WHERE reviewed_at > ?";
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_REVIEWED_AT_AFTER)) {
             ps.setTimestamp(1, Timestamp.valueOf(date));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 reviews.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error retrieving reviews after date", e);
         }
         return reviews;
     }
 
+
     private Review mapRow(ResultSet rs) throws SQLException {
         return Review.builder()
-                .id(rs.getInt("id"))
+                .id(rs.getInt(1))
                 .userId(rs.getInt("user_id"))
                 .bookId(rs.getInt("book_id"))
                 .rating(rs.getInt("rating"))
                 .comment(rs.getString("comment"))
                 .build();
-
     }
 
     public static void main(String[] args) {
-        ReviewRepositoryImpl reviewRepository = new ReviewRepositoryImpl();
-//        reviewRepository.retrieveAll();
-       reviewRepository.retrieveByUserId(1);
-      reviewRepository.retrieveByBookId(1);
-      reviewRepository.retrieveByRatingGreaterThanEqual(1);
-      reviewRepository.retrieveByReviewedAtAfter(LocalDateTime.now());
-      reviewRepository.deleteById(1);
+        ReviewRepositoryImpl repo = new ReviewRepositoryImpl();
+//        Review review = new Review();
+//        review.setUserId(4);
+//        review.setBookId(7);
+//        review.setRating(3)//    review.setComment("comment");
 
+//        System.out.println(repo.deleteById());
     }
 }

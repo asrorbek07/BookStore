@@ -43,9 +43,10 @@ public class UserRepositoryImpl implements UserRepository {
 
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
-                user.setId(rs.getInt(1));
+                return retrieveById(rs.getInt(1)).orElseThrow(
+                        () -> new RuntimeException("Failed to retrieve created user"));
             }
-            return user;
+            throw new RuntimeException("Failed to create user, no ID returned");
         } catch (SQLException e) {
             throw new RuntimeException("Error creating user", e);
         }

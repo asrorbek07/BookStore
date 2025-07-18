@@ -1,21 +1,23 @@
 package uz.kruz.service;
 
+import uz.kruz.domain.Book;
 import uz.kruz.dto.BaseDTO;
+import uz.kruz.dto.BookDTO;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface BookService<D extends BaseDTO> extends Service<D, Integer> {
+public interface BookService extends Service<BookDTO, Book, Integer> {
 
-    Optional<D> findByIsbn(String isbn);
+    Optional<Book> findByIsbn(String isbn);
 
-    List<D> findByTitle(String title);
+    List<Book> findByTitle(String title);
 
-    List<D> findByCategoryId(Integer categoryId);
+    List<Book> findByCategoryId(Integer categoryId);
 
-    List<D> findByPublisherId(Integer publisherId);
+    List<Book> findByPublisherId(Integer publisherId);
 
-    List<D> findByAuthorId(Integer authorId);
+    List<Book> findByAuthorId(Integer authorId);
 
-    List<D> findByStockLessThan(Integer amount);
+    List<Book> findByStockLessThan(Integer amount);
 }

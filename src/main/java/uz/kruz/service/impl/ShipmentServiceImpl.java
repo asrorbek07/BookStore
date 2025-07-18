@@ -1,6 +1,7 @@
 package uz.kruz.service.impl;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Shipment;
+import uz.kruz.dto.ShipmentDTO;
 import uz.kruz.repository.ShipmentRepository;
 import uz.kruz.service.ShipmentService;
 
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public class ShipmentServiceImpl<D extends BaseDTO> implements ShipmentService<D> {
+public class ShipmentServiceImpl implements ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
 
@@ -18,17 +19,17 @@ public class ShipmentServiceImpl<D extends BaseDTO> implements ShipmentService<D
     }
 
     @Override
-    public D register(D dto) {
+    public Shipment register(ShipmentDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public Optional<D> findById(Integer id) {
+    public Optional<Shipment> findById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findAll() {
+    public List<Shipment> findAll() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -38,7 +39,7 @@ public class ShipmentServiceImpl<D extends BaseDTO> implements ShipmentService<D
     }
 
     @Override
-    public D modify(D dto) {
+    public Shipment modify(ShipmentDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -48,22 +49,22 @@ public class ShipmentServiceImpl<D extends BaseDTO> implements ShipmentService<D
     }
 
     @Override
-    public Optional<D> findByTrackingNumber(String trackingNumber) {
+    public Optional<Shipment> findByTrackingNumber(String trackingNumber) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByOrderId(Integer orderId) {
+    public List<Shipment> findByOrderId(Integer orderId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByShippedAtAfter(LocalDateTime date) {
+    public List<Shipment> findByShippedAtAfter(LocalDateTime date) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByDeliveryEstimateBefore(LocalDate date) {
+    public List<Shipment> findByDeliveryEstimateBefore(LocalDate date) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

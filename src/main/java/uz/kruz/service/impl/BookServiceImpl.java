@@ -1,13 +1,14 @@
 package uz.kruz.service.impl;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Book;
+import uz.kruz.dto.BookDTO;
 import uz.kruz.repository.BookRepository;
 import uz.kruz.service.BookService;
 
 import java.util.List;
 import java.util.Optional;
 
-public class BookServiceImpl<D extends BaseDTO> implements BookService<D> {
+public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
@@ -18,17 +19,17 @@ public class BookServiceImpl<D extends BaseDTO> implements BookService<D> {
     }
 
     @Override
-    public D register(D dto) {
+    public Book register(BookDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public Optional<D> findById(Integer id) {
+    public Optional<Book> findById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findAll() {
+    public List<Book> findAll() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -38,7 +39,7 @@ public class BookServiceImpl<D extends BaseDTO> implements BookService<D> {
     }
 
     @Override
-    public D modify(D dto) {
+    public Book modify(BookDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -48,32 +49,32 @@ public class BookServiceImpl<D extends BaseDTO> implements BookService<D> {
     }
 
     @Override
-    public Optional<D> findByIsbn(String isbn) {
+    public Optional<Book> findByIsbn(String isbn) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByTitle(String title) {
+    public List<Book> findByTitle(String title) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByCategoryId(Integer categoryId) {
+    public List<Book> findByCategoryId(Integer categoryId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByPublisherId(Integer publisherId) {
+    public List<Book> findByPublisherId(Integer publisherId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByAuthorId(Integer authorId) {
+    public List<Book> findByAuthorId(Integer authorId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByStockLessThan(Integer amount) {
+    public List<Book> findByStockLessThan(Integer amount) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

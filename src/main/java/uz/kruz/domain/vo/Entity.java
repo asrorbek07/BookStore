@@ -15,4 +15,5 @@ public interface Entity {
     LocalDateTime getUpdatedAt();
 
     void setUpdatedAt(LocalDateTime updatedAt);
+
 }
