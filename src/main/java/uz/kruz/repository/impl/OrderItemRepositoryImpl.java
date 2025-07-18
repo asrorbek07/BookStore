@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class OrderItemRepositoryImpl implements OrderItemRepository {
     private final String INSERT = "INSERT INTO order_items(order_id, book_id, quantity, price) VALUES(?, ?, ?, ?)";
-    private final String SELECT = "SELECT * FROM order_items WHERE order_id = ?";
+    private final String SELECT_BY_ID = "SELECT * FROM order_items WHERE id = ?";
     private final String SELECT_ALL = "SELECT * FROM order_items";
     private final String DELETE = "DELETE FROM order_items WHERE id = ?";
     private final String UPDATE = "UPDATE order_items SET quantity = ?, price = ? WHERE id = ?";
@@ -44,7 +44,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             }
             return entity;
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented",e);
+            throw new RuntimeException("Error inserting OrderItem", e);
         }
 
     }
@@ -52,14 +52,14 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
     @Override
     public Optional<OrderItem> retrieveById(Integer id) {
 
-        try (PreparedStatement ps = connection.prepareStatement(SELECT)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented");
+            throw new RuntimeException("Error retrieving OrderItem by ID", e);
         }
         return Optional.empty();
     }
@@ -74,7 +74,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
                 orderItems.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented");
+            throw new RuntimeException("Error retrieving all OrderItems", e);
         }
         return orderItems;
     }
@@ -86,7 +86,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            throw new RuntimeException("Error deleting OrderItem", e);
         }
     }
 
@@ -100,7 +100,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             ps.executeUpdate();
             return entity;
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            throw new RuntimeException("Error updating OrderItem", e);
         }
     }
 
@@ -113,7 +113,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
                 return rs.getLong(1);
             }
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            throw new RuntimeException("Error counting OrderItems", e);
         }
         return 0;
     }
@@ -129,7 +129,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
                 orderItems.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            throw new RuntimeException("Error retrieving by orderId", e);
         }
         return orderItems;
     }
@@ -145,7 +145,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
                 orderItems.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            throw new RuntimeException("Error retrieving by bookId", e);
         }
         return orderItems;
     }
@@ -161,7 +161,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
                 orderItems.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            throw new RuntimeException("Error retrieving by quantity", e);
         }
         return orderItems;
     }
