@@ -12,6 +12,8 @@ public class BookServiceImpl<D extends BaseDTO> implements BookService<D> {
     private final BookRepository bookRepository;
 
     public BookServiceImpl(BookRepository bookRepository) {
+
+
         this.bookRepository = bookRepository;
     }
 
