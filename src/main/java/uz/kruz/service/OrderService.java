@@ -1,18 +1,19 @@
 package uz.kruz.service;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.Order;
 import uz.kruz.domain.vo.OrderStatus;
+import uz.kruz.dto.OrderDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface OrderService<D extends BaseDTO> extends Service<D, Integer> {
+public interface OrderService extends Service<OrderDTO, Order, Integer> {
 
-    List<D> findByUserId(Integer userId);
+    List<Order> findByUserId(Integer userId);
 
-    List<D> findByStatus(OrderStatus status);
+    List<Order> findByStatus(OrderStatus status);
 
-    List<D> findByOrderDateAfter(LocalDateTime date);
+    List<Order> findByOrderDateAfter(LocalDateTime date);
 
-    List<D> findByTotalAmountGreaterThan(Double amount);
+    List<Order> findByTotalAmountGreaterThan(Double amount);
 }

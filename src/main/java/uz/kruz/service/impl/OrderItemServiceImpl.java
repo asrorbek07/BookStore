@@ -1,12 +1,14 @@
 package uz.kruz.service.impl;
 
-import uz.kruz.dto.BaseDTO;
+import uz.kruz.domain.OrderItem;
+import uz.kruz.dto.OrderItemDTO;
 import uz.kruz.repository.OrderItemRepository;
 import uz.kruz.service.OrderItemService;
 
 import java.util.List;
 import java.util.Optional;
-public class OrderItemServiceImpl<D extends BaseDTO> implements OrderItemService<D> {
+
+public class OrderItemServiceImpl implements OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
 
@@ -15,17 +17,17 @@ public class OrderItemServiceImpl<D extends BaseDTO> implements OrderItemService
     }
 
     @Override
-    public D register(D dto) {
+    public OrderItem register(OrderItemDTO dto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public Optional<D> findById(Integer id) {
+    public Optional<OrderItem> findById(Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findAll() {
+    public List<OrderItem> findAll() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -35,7 +37,7 @@ public class OrderItemServiceImpl<D extends BaseDTO> implements OrderItemService
     }
 
     @Override
-    public D modify(D dto) {
+    public OrderItem modify(OrderItemDTO dto, Integer id) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -45,17 +47,17 @@ public class OrderItemServiceImpl<D extends BaseDTO> implements OrderItemService
     }
 
     @Override
-    public List<D> findByOrderId(Integer orderId) {
+    public List<OrderItem> findByOrderId(Integer orderId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByBookId(Integer bookId) {
+    public List<OrderItem> findByBookId(Integer bookId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<D> findByQuantityGreaterThan(Integer quantity) {
+    public List<OrderItem> findByQuantityGreaterThan(Integer quantity) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }
