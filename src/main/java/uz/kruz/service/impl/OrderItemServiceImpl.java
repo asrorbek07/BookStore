@@ -2,8 +2,10 @@ package uz.kruz.service.impl;
 
 import uz.kruz.domain.OrderItem;
 import uz.kruz.dto.OrderItemDTO;
+import uz.kruz.repository.BookRepository;
 import uz.kruz.repository.OrderItemRepository;
 import uz.kruz.service.OrderItemService;
+import uz.kruz.util.StringUtil;
 import uz.kruz.util.orderItemCheck.OrderItemChecks;
 
 import java.math.BigDecimal;
@@ -13,9 +15,11 @@ import java.util.Optional;
 public class OrderItemServiceImpl implements OrderItemService {
 
     private final OrderItemRepository orderItemRepository;
+    private final BookRepository bookRepository;
 
-    public OrderItemServiceImpl(OrderItemRepository orderItemRepository) {
+    public OrderItemServiceImpl(OrderItemRepository orderItemRepository, BookRepository bookRepository) {
         this.orderItemRepository = orderItemRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -50,12 +54,24 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderItem modify(OrderItemDTO dto, Integer id) {
+        OrderItem existing = orderItemRepository.retrieveById(id).orElseThrow(() -> new IllegalArgumentException("OrderItem with id " + id + " does not exist"));
         OrderItemChecks.modifyCheck(dto);
-        Optional<OrderItem> existing = orderItemRepository.retrieveById(id);
-        if (existing.isPresent()) {
-            existing.get().setQuantity(existing.get().getQuantity() + dto.getQuantity());
+        if(dto.getBookId() != null) {
+            bookRepository.retrieveById(dto.getBookId()).orElseThrow(() -> new IllegalArgumentException("Book with id " + dto.getBookId() + " does not exist"));
         }
-        return orderItemRepository.update(existing.get());
+        if (dto.getQuantity()!=null) {
+            if (dto.getQuantity() <= 0) {
+                throw new IllegalArgumentException("Quantity must be greater than 0");
+            }
+            existing.setQuantity(dto.getQuantity());
+        }
+        if (dto.getPrice()!=null) {
+            if (dto.getPrice() <= 0) {
+                throw new IllegalArgumentException("Price must be greater than 0");
+            }
+            existing.setPrice(BigDecimal.valueOf(dto.getPrice()));
+        }
+        return orderItemRepository.update(existing);
     }
 
     @Override
