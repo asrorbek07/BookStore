@@ -27,9 +27,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.retrieveByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException(String.format("User with email %s already exists", dto.getEmail()));
         }
-        if(StringUtil.isEmpty(dto.getPassword())||
-        StringUtil.isEmpty(dto.getFullName())||
-        StringUtil.isEmpty(dto.getPhoneNumber())){
+        if (StringUtil.isEmpty(dto.getPassword()) ||
+                StringUtil.isEmpty(dto.getFullName()) ||
+                StringUtil.isEmpty(dto.getPhoneNumber())) {
             throw new IllegalArgumentException("fields must not be empty");
         }
 
@@ -46,6 +46,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findById(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id must not be null");
+        }
         return userRepository.retrieveById(id);
     }
 
@@ -62,7 +65,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User modify(UserDTO dto, Integer id) {
         User user = userRepository.retrieveById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        if (dto.getFullName()!=null&&!StringUtil.isEmpty(dto.getFullName())) {
+        if (dto.getFullName() != null && !StringUtil.isEmpty(dto.getFullName())) {
             user.setFullName(dto.getFullName());
         }
 
@@ -72,21 +75,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public long count() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return userRepository.count();
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        throw new UnsupportedOperationException("Method not implemented");
+        if (StringUtil.isEmpty(email)) {
+            return userRepository.retrieveByEmail(email);
+        } else
+            throw new RuntimeException(String.format("User with email %s already exists", email));
     }
 
     @Override
     public List<User> findByName(String name) {
+        if (StringUtil.isEmpty(name)) {
+            return userRepository.retrieveByName(name);
+        }
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
     public List<User> findByRole(UserRole role) {
+        if (StringUtil.isEmpty(role.name()))
+            return userRepository.retrieveByRole(role);
         throw new UnsupportedOperationException("Method not implemented");
     }
 }
