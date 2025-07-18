@@ -15,5 +15,4 @@ public class BookAuthor extends BaseEntity {
     // Relationships (not stored in database directly)
     private Book book;
     private Author author;
-
 }
