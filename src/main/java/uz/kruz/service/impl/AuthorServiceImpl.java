@@ -103,9 +103,10 @@ public class AuthorServiceImpl implements AuthorService {
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
-                Author author = new Author();
-                author.setId(rs.getLong("id"));
-                author.setFullName(rs.getString("name"));
+                Author author = Author.builder()
+                        .id(rs.getInt("id"))
+                        .fullName(rs.getString("full_name"))
+                        .build();
                 authors.add(author);
             }
 
