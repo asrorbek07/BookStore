@@ -5,7 +5,7 @@ import uz.kruz.domain.User;
 import uz.kruz.domain.vo.UserRole;
 import uz.kruz.repository.UserRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 
 import java.sql.*;
@@ -89,7 +89,7 @@ public class UserRepositoryImpl implements UserRepository {
             ps.setInt(1, id);
             int deleted = ps.executeUpdate();
             if (deleted == 0) {
-                throw new EntityNotFoundException("User not found for ID: " + id);
+                throw new RowNotFoundException("User not found for ID: " + id);
             }
             return true;
         } catch (SQLException e) {
@@ -107,7 +107,7 @@ public class UserRepositoryImpl implements UserRepository {
             ps.setString(5, user.getRole().name());
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new EntityNotFoundException("User not found for ID: " + user.getId());
+                throw new RowNotFoundException("User not found for ID: " + user.getId());
             }
             return user;
         } catch (SQLException e) {

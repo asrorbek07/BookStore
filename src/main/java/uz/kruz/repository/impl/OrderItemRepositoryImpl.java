@@ -4,7 +4,7 @@ import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.OrderItem;
 import uz.kruz.repository.OrderItemRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 
 import java.sql.*;
@@ -85,7 +85,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             ps.setInt(1, id);
             int rows = ps.executeUpdate();
             if (rows == 0) {
-                throw new EntityNotFoundException("No OrderItem found with ID: " + id);
+                throw new RowNotFoundException("No OrderItem found with ID: " + id);
             }
             return true;
         } catch (SQLException e) {
@@ -100,7 +100,7 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
             ps.setBigDecimal(2, entity.getPrice());
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new EntityNotFoundException("No OrderItem found with ID: " + entity.getId());
+                throw new RowNotFoundException("No OrderItem found with ID: " + entity.getId());
             }
             return entity;
         } catch (SQLException e) {
