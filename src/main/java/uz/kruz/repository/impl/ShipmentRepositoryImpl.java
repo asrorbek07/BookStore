@@ -3,6 +3,9 @@ package uz.kruz.repository.impl;
 import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Shipment;
 import uz.kruz.repository.ShipmentRepository;
+import uz.kruz.util.exceptions.DatabaseUnavailableException;
+import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RepositoryException;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -12,29 +15,29 @@ import java.util.List;
 import java.util.Optional;
 
 public class ShipmentRepositoryImpl implements ShipmentRepository {
-    private final String INSERT = "INSERT INTO shipments (order_id, tracking_number, shipped_at, delivery_estimate) VALUES (?, ?, ?, ?)";
-    private final String SELECT = "SELECT * FROM shipments WHERE id = ?";
-    private final String SELECT_ALL = "SELECT * FROM shipments";
-    private final String DELETE = "DELETE FROM shipments WHERE id = ?";
-    private final String UPDATE = "UPDATE shipments SET order_id = ?, tracking_number = ?,  shipped_at = ?, delivery_estimate = ? WHERE id = ?";
-    private final String COUNT = "SELECT COUNT(*) FROM shipments";
-    private final String SELECT_BY_TM = "SELECT * FROM shipments WHERE tracking_number = ?";
-    private final String SELECT_BY_ORDER_ID = "SELECT * FROM shipments WHERE order_id = ?";
-    private final String SELECT_BY_SHIPPED_AT = "SELECT * FROM shipments WHERE shipped_at <= ?";
-    private final String SELECT_BY_DELIVERY = "SELECT * FROM shipments WHERE delivery_estimate > ?";
+    private static final String INSERT = "INSERT INTO shipments (order_id, tracking_number, shipped_at, delivery_estimate) VALUES (?, ?, ?, ?)";
+    private static final String SELECT_BY_ID = "SELECT * FROM shipments WHERE id = ?";
+    private static final String SELECT_ALL = "SELECT * FROM shipments";
+    private static final String DELETE = "DELETE FROM shipments WHERE id = ?";
+    private static final String UPDATE = "UPDATE shipments SET order_id = ?, tracking_number = ?,  shipped_at = ?, delivery_estimate = ? WHERE id = ?";
+    private static final String COUNT = "SELECT COUNT(*) FROM shipments";
+    private static final String SELECT_BY_TRACKING_NUMBER = "SELECT * FROM shipments WHERE tracking_number = ?";
+    private static final String SELECT_BY_ORDER_ID = "SELECT * FROM shipments WHERE order_id = ?";
+    private static final String SELECT_BY_SHIPPED_AT = "SELECT * FROM shipments WHERE shipped_at <= ?";
+    private static final String SELECT_BY_DELIVERY_ESTIMATE = "SELECT * FROM shipments WHERE delivery_estimate > ?";
+
     private final Connection connection;
 
     public ShipmentRepositoryImpl() {
         try {
             this.connection = DatabaseConnection.getInstance().getConnection();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to initialize database connection", e);
+            throw new DatabaseUnavailableException("Failed to initialize database connection", e);
         }
     }
 
     @Override
     public Shipment create(Shipment entity) {
-
         try (PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, entity.getOrderId());
             ps.setString(2, entity.getTrackingNumber());
@@ -47,22 +50,21 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
                 entity.setId(rs.getInt(1));
             }
             return entity;
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+        } catch (SQLException e) {
+            throw new RepositoryException("Error inserting shipment", e);
         }
     }
 
     @Override
     public Optional<Shipment> retrieveById(Integer id) {
-
-        try (PreparedStatement ps = connection.prepareStatement(SELECT)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            throw new RepositoryException("Error retrieving shipment by id", e);
         }
         return Optional.empty();
     }
@@ -71,76 +73,83 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
     public List<Shipment> retrieveAll() {
         List<Shipment> shipments = new ArrayList<>();
 
-        try(Statement stmt = connection.createStatement()) {
+        try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(SELECT_ALL);
             while (rs.next()) {
                 shipments.add(mapRow(rs));
             }
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+        } catch (SQLException e) {
+            throw new RepositoryException("Error retrieving all shipments", e);
         }
         return shipments;
     }
 
     @Override
     public boolean deleteById(Integer id) {
-
-        try(PreparedStatement ps = connection.prepareStatement(DELETE)) {
+        try (PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setInt(1, id);
-            return ps.executeUpdate() == 1;
-        } catch (Exception e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            int deleted = ps.executeUpdate();
+            if (deleted == 0) {
+                throw new EntityNotFoundException("Shipment with id " + id + " not found for deletion");
+            }
+            return true;
+        } catch (SQLException e) {
+            throw new RepositoryException("Error deleting shipment", e);
         }
     }
 
     @Override
     public Shipment update(Shipment entity) {
-
-        try(PreparedStatement ps = connection.prepareStatement(UPDATE)) {
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setInt(1, entity.getOrderId());
             ps.setString(2, entity.getTrackingNumber());
             ps.setTimestamp(3, Timestamp.valueOf(entity.getShippedAt()));
             ps.setDate(4, Date.valueOf(entity.getDeliveryEstimate()));
-            ps.setInt(5, entity.getId());
-            ps.executeUpdate();
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                throw new EntityNotFoundException("Shipment with id " + entity.getId() + " not found for update");
+            }
             return entity;
-        } catch (Exception e) {
-
-            throw new UnsupportedOperationException("Method not implemented");
+        } catch (SQLException e) {
+            throw new RepositoryException("Error updating shipment", e);
         }
     }
 
     @Override
     public long count() {
-
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(COUNT);
             if (rs.next()) {
                 return rs.getLong(1);
             }
         } catch (SQLException e) {
-            throw new UnsupportedOperationException("Method not implemented", e);
+            throw new RepositoryException("Error counting shipments", e);
         }
         return 0;
     }
 
     @Override
-    public boolean existsById(Integer integer) {
-        return false;
+    public boolean existsById(Integer id) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Error checking existence for shipment id: " + id, e);
+        }
     }
 
     @Override
     public Optional<Shipment> retrieveByTrackingNumber(String trackingNumber) {
-
-        try(PreparedStatement ps = connection.prepareStatement(SELECT_BY_TM)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_TRACKING_NUMBER)) {
             ps.setString(1, trackingNumber);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapRow(rs));
             }
-        } catch (Exception e) {
-
-            throw new UnsupportedOperationException("Method not implemented", e);
+        } catch (SQLException e) {
+            throw new RepositoryException("Error retrieving shipment by tracking number", e);
         }
         return Optional.empty();
     }
@@ -148,16 +157,14 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
     @Override
     public List<Shipment> retrieveByOrderId(Integer orderId) {
         List<Shipment> shipments = new ArrayList<>();
-
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ORDER_ID)) {
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 shipments.add(mapRow(rs));
             }
-        } catch (Exception e) {
-
-            throw new UnsupportedOperationException("Method not implemented", e);
+        } catch (SQLException e) {
+            throw new RepositoryException("Error retrieving shipments by orderId", e);
         }
         return shipments;
     }
@@ -165,16 +172,14 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
     @Override
     public List<Shipment> retrieveByShippedAtAfter(LocalDateTime date) {
         List<Shipment> shipments = new ArrayList<>();
-
-        try(PreparedStatement ps = connection.prepareStatement(SELECT_BY_SHIPPED_AT)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_SHIPPED_AT)) {
             ps.setTimestamp(1, Timestamp.valueOf(date));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 shipments.add(mapRow(rs));
             }
-        } catch (Exception e) {
-
-            throw new UnsupportedOperationException("Method not implemented", e);
+        } catch (SQLException e) {
+            throw new RepositoryException("Error retrieving shipments by shippedAt", e);
         }
         return shipments;
     }
@@ -182,16 +187,14 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
     @Override
     public List<Shipment> retrieveByDeliveryEstimateBefore(LocalDate date) {
         List<Shipment> shipments = new ArrayList<>();
-
-        try(PreparedStatement ps = connection.prepareStatement(SELECT_BY_DELIVERY)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_DELIVERY_ESTIMATE)) {
             ps.setDate(1, Date.valueOf(date));
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 shipments.add(mapRow(rs));
             }
-        } catch (Exception e) {
-
-            throw new UnsupportedOperationException("Method not implemented", e);
+        } catch (SQLException e) {
+            throw new RepositoryException("Error retrieving shipments by deliveryEstimate", e);
         }
         return shipments;
     }
@@ -205,18 +208,16 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
                 .deliveryEstimate(rs.getDate("delivery_estimate").toLocalDate())
                 .build();
     }
+
     public static void main(String[] args) {
         ShipmentRepository shipmentRepository = new ShipmentRepositoryImpl();
-        shipmentRepository.retrieveAll().forEach(
-                shipment -> {
-                    System.out.println("Shipment ID: " + shipment.getId());
-                    System.out.println("Shipment OrderID: " + shipment.getOrderId());
-                    System.out.println("Shipment TrackNum: " + shipment.getTrackingNumber());
-                    System.out.println("Shipment ShippedAt: " + shipment.getShippedAt());
-                    System.out.println("Shipment DeliveryEstimate: " + shipment.getDeliveryEstimate());
-                    System.out.println("-----------------------------");
-
-                }
-        );
+        shipmentRepository.retrieveAll().forEach(shipment -> {
+            System.out.println("Shipment ID: " + shipment.getId());
+            System.out.println("Shipment OrderID: " + shipment.getOrderId());
+            System.out.println("Shipment TrackNum: " + shipment.getTrackingNumber());
+            System.out.println("Shipment ShippedAt: " + shipment.getShippedAt());
+            System.out.println("Shipment DeliveryEstimate: " + shipment.getDeliveryEstimate());
+            System.out.println("-----------------------------");
+        });
     }
 }
