@@ -10,4 +10,6 @@ public interface PublisherRepository extends Repository<Publisher, Integer> {
     Optional<Publisher> retrieveByName(String name);
 
     List<Publisher> retrieveByEmail(String email);
+
+    Optional<Publisher> findFirstByEmail(String email);
 }
