@@ -5,6 +5,9 @@ import uz.kruz.dto.CategoryDTO;
 import uz.kruz.repository.CategoryRepository;
 import uz.kruz.service.CategoryService;
 import uz.kruz.util.StringUtil;
+import uz.kruz.util.Validator;
+import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.ServiceException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +22,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category register(CategoryDTO dto) {
-       if (StringUtil.isEmpty(dto.getName())){
-           throw new IllegalArgumentException("name must not be empty");
-       }
+        if (dto == null) {
+            throw new ServiceException("CategoryDTO must not be null");
+        }
+        if (dto.getName()!=null){
+            Validator.validateString(dto.getName(), "Name");
+        }
         Category category=Category.builder().name(dto.getName()).build();
        return categoryRepository.create(category);
     }
@@ -29,6 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Optional<Category> findById(Integer id) {
+        Validator.validateId(id);
         return categoryRepository.retrieveById(id);
     }
 
@@ -39,14 +46,29 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public boolean removeById(Integer id) {
+        Validator.validateId(id);
+        if (categoryRepository.retrieveById(id).isEmpty()) {
+            throw new EntityNotFoundException(String.format("Category with ID '%d' not found", id));
+        }
         return categoryRepository.deleteById(id);
     }
 
     @Override
     public Category modify(CategoryDTO dto, Integer id) {
-        Category category=categoryRepository.retrieveById(id).orElseThrow(() -> new RuntimeException("category not found"+id));
-        if (dto.getName()!=null&&!StringUtil.isEmpty(dto.getName())){
+        Validator.validateId(id);
+
+        Category category=categoryRepository.retrieveById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Category with ID '%d' not found", id)));
+        boolean modified = false;
+
+
+        if (dto.getName()!=null){
+            Validator.validateString(dto.getName(), "name");
             category.setName(dto.getName());
+            modified = true;
+        }
+        if (!modified) {
+            throw new ServiceException("No fields provided for update");
         }
         return categoryRepository.update(category);
     }
@@ -57,10 +79,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public Category findByName(String name) {
-        if (StringUtil.isEmpty(name)) {
-            throw new IllegalArgumentException("Name must not be empty");
-        }
+        Validator.validateString(name, "Name");
+
         return categoryRepository.retrieveByName(name).orElseThrow();
 
     }

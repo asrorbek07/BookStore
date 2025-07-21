@@ -79,6 +79,11 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public List<OrderItem> findByOrderId(Integer orderId) {
         OrderItemChecks.findByOrderIdCheck(orderId);
         return orderItemRepository.retrieveByOrderId(orderId);

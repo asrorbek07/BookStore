@@ -4,6 +4,8 @@ import uz.kruz.domain.Review;
 import uz.kruz.dto.ReviewDTO;
 import uz.kruz.repository.ReviewRepository;
 import uz.kruz.service.ReviewService;
+import uz.kruz.util.Validator;
+import uz.kruz.util.exceptions.ServiceException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,22 +21,32 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review register(ReviewDTO dto) {
-        throw new UnsupportedOperationException("Method not implemented");
+        if (dto == null) {
+            throw new ServiceException("ReviewDTO must not be null");
+        }
+        if (dto.getUserId() == null) {
+            Validator.validateId(dto.getUserId());
+        }
+        Review review=Review.builder().userId(dto.getUserId()).
+                bookId(dto.getBookId()).
+                rating(dto.getRating()).
+                comment(dto.getComment()).build();
+        return reviewRepository.create(review);
     }
 
     @Override
     public Optional<Review> findById(Integer id) {
-        throw new UnsupportedOperationException("Method not implemented");
+        return reviewRepository.retrieveById(id);
     }
 
     @Override
     public List<Review> findAll() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return reviewRepository.retrieveAll();
     }
 
     @Override
     public boolean removeById(Integer id) {
-        throw new UnsupportedOperationException("Method not implemented");
+        return reviewRepository.deleteById(id);
     }
 
     @Override
@@ -45,6 +57,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public long count() {
         throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public boolean existsById(Integer integer) {
+        return false;
     }
 
     @Override
