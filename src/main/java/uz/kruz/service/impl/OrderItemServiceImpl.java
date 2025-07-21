@@ -5,8 +5,7 @@ import uz.kruz.dto.OrderItemDTO;
 import uz.kruz.repository.BookRepository;
 import uz.kruz.repository.OrderItemRepository;
 import uz.kruz.service.OrderItemService;
-import uz.kruz.util.StringUtil;
-import uz.kruz.util.orderItemCheck.OrderItemChecks;
+import uz.kruz.util.Check.OrderItemChecks;
 
 import java.math.BigDecimal;
 import java.util.List;
