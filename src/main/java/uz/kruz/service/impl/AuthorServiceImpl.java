@@ -4,6 +4,7 @@ import uz.kruz.domain.Author;
 import uz.kruz.domain.User;
 import uz.kruz.dto.AuthorDTO;
 import uz.kruz.repository.AuthorRepository;
+import uz.kruz.repository.BookRepository;
 import uz.kruz.service.AuthorService;
 import uz.kruz.util.StringUtil;
 
@@ -14,9 +15,11 @@ import java.util.*;
 public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorRepository authorRepository;
+    private final BookRepository bookRepository;
 
-    public AuthorServiceImpl(AuthorRepository authorRepository) {
+    public AuthorServiceImpl(AuthorRepository authorRepository, BookRepository bookRepository) {
         this.authorRepository = authorRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Override
@@ -84,37 +87,10 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<Author> findByBookId(Integer bookId) {
-        if (bookId == null) {
-            throw new IllegalArgumentException("bookId bo'sh bo'lmasligi kerak");
+        if (!bookRepository.existsById(bookId)) {
+            throw new RuntimeException(String.format("Book with id %d does not exists", bookId));
         }
-
-        List<Author> authors = new ArrayList<>();
-        String SELECT_FIND_BY_BOOK_ID = "SELECT * FROM author WHERE book_id = ?";
-
-        try (
-                Connection connection = DriverManager.getConnection(
-                        "jdbc:mariadb://localhost:3306/your_database",
-                        "your_username",
-                        "your_password"
-                );
-                PreparedStatement preparedStatement = connection.prepareStatement(SELECT_FIND_BY_BOOK_ID)
-        ) {
-            preparedStatement.setInt(1, bookId);
-            ResultSet rs = preparedStatement.executeQuery();
-
-            while (rs.next()) {
-                Author author = Author.builder()
-                        .id(rs.getInt("id"))
-                        .fullName(rs.getString("full_name"))
-                        .build();
-                authors.add(author);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return authors;
+        return authorRepository.retrieveByBookId(bookId);
     }
 
 }
