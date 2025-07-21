@@ -99,7 +99,6 @@ public class ReviewRepositoryImpl implements ReviewRepository {
             ps.setInt(1, entity.getUserId());
             ps.setInt(2, entity.getBookId());
             ps.setDouble(3, entity.getRating());
-            ps.setInt(4, entity.getId());
             int updated = ps.executeUpdate();
             if (updated == 0) throw new EntityNotFoundException(String.format("Review with id %d not found", entity.getId()));
             return entity;
