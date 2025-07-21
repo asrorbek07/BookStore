@@ -28,6 +28,7 @@ public class BookRepositoryImpl implements BookRepository {
     private static final String BY_PUBLISHER = "SELECT * FROM books WHERE publisher_id = ?";
     private static final String BY_AUTHOR_ID = "SELECT b.* FROM books b JOIN book_authors ba ON b.id = ba.book_id WHERE ba.author_id = ?";
     private static final String BY_STOCK_LESS = "SELECT * FROM books WHERE stock < ?";
+    private static final String EXIST_BY_ISBN = "select 1 from books where isbn = ?";
 
     public BookRepositoryImpl() {
         try {
@@ -214,6 +215,21 @@ public class BookRepositoryImpl implements BookRepository {
             throw new RepositoryException("Error retrieving books with stock less than " + amount, e);
         }
         return books;
+    }
+
+    @Override
+    public Boolean existsByIsbn(String isbn) {
+
+        try (PreparedStatement ps = connection.prepareStatement(EXIST_BY_ISBN)){
+            ps.setString(1, isbn);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
     @Override
