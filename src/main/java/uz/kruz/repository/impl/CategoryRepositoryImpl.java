@@ -3,7 +3,7 @@ package uz.kruz.repository.impl;
 import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Category;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.repository.CategoryRepository;
 
@@ -80,7 +80,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
             ps.setInt(1, id);
             int deleted = ps.executeUpdate();
             if (deleted == 0) {
-                throw new EntityNotFoundException("Category with id " + id + " not found for deletion");
+                throw new RowNotFoundException("Category with id " + id + " not found for deletion");
             }
             return true;
         } catch (SQLException e) {
@@ -94,7 +94,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
             ps.setString(1, entity.getName());
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new EntityNotFoundException("Category with id " + entity.getId() + " not found for update");
+                throw new RowNotFoundException("Category with id " + entity.getId() + " not found for update");
             }
             return entity;
         } catch (SQLException e) {

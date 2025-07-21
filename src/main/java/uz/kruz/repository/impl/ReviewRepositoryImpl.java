@@ -4,7 +4,7 @@ import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Review;
 import uz.kruz.repository.ReviewRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 
 import java.sql.*;
@@ -86,7 +86,7 @@ public class ReviewRepositoryImpl implements ReviewRepository {
         try (PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setInt(1, id);
             int affected = ps.executeUpdate();
-            if (affected == 0) throw new EntityNotFoundException(String.format("Review with id %d not found", id));
+            if (affected == 0) throw new RowNotFoundException(String.format("Review with id %d not found", id));
             return true;
         } catch (SQLException e) {
             throw new RepositoryException("Error deleting review", e);
@@ -100,7 +100,7 @@ public class ReviewRepositoryImpl implements ReviewRepository {
             ps.setInt(2, entity.getBookId());
             ps.setDouble(3, entity.getRating());
             int updated = ps.executeUpdate();
-            if (updated == 0) throw new EntityNotFoundException(String.format("Review with id %d not found", entity.getId()));
+            if (updated == 0) throw new RowNotFoundException(String.format("Review with id %d not found", entity.getId()));
             return entity;
         } catch (SQLException e) {
             throw new RepositoryException("Error updating review", e);

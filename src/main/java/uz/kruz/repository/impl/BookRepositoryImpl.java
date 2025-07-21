@@ -4,7 +4,7 @@ import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Book;
 import uz.kruz.repository.BookRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 
 import java.sql.*;
@@ -107,7 +107,7 @@ public class BookRepositoryImpl implements BookRepository {
 
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new EntityNotFoundException("No book found for update with ID: " + entity.getId());
+                throw new RowNotFoundException("No book found for update with ID: " + entity.getId());
             }
             return entity;
         } catch (SQLException e) {
