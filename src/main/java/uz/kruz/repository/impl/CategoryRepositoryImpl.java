@@ -1,14 +1,13 @@
 package uz.kruz.repository.impl;
 
-import org.mariadb.jdbc.Statement;
 import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Category;
+import uz.kruz.util.exceptions.DatabaseUnavailableException;
+import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.repository.CategoryRepository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,138 +15,143 @@ import java.util.Optional;
 public class CategoryRepositoryImpl implements CategoryRepository {
 
     private final Connection connection;
-    private final String CREATECATEGORY = "INSERT INTO categories (name) VALUES (?)";
-    private final String RERIEVEBYIDD = "SELECT * FROM categories WHERE id=?";
-    private final String RETRIEVEALLL = "SELECT * FROM categories";
-    private final String DELETE = "DELETE FROM categories WHERE id=?";
-    private final String UPDATECAT = "UPDATE categories SET name=? WHERE id=?";
-    private final String COUNTCAT = "SELECT COUNT(*) FROM categories";
-    private final String RETRIEVENAME = "SELECT * FROM categories WHERE name=?";
+    private static final String CREATE = "INSERT INTO categories (name) VALUES (?)";
+    private static final String SELECT_BY_ID = "SELECT * FROM categories WHERE id=?";
+    private static final String SELECT_ALL = "SELECT * FROM categories";
+    private static final String DELETE = "DELETE FROM categories WHERE id=?";
+    private static final String UPDATE = "UPDATE categories SET name=? WHERE id=?";
+    private static final String COUNT = "SELECT COUNT(*) FROM categories";
+    private static final String SELECT_BY_NAME = "SELECT * FROM categories WHERE name LIKE ?";
 
     public CategoryRepositoryImpl() {
         try {
             this.connection = DatabaseConnection.getInstance().getConnection();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to initialize database connection", e);
+            throw new DatabaseUnavailableException("Failed to initialize database connection", e);
         }
     }
 
     @Override
     public Category create(Category entity) {
-
-        try (PreparedStatement ps = connection.prepareStatement(CREATECATEGORY, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement ps = connection.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, entity.getName());
             ps.executeUpdate();
-
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 entity.setId(rs.getInt(1));
             }
             return entity;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException("Error creating category: " + entity, e);
         }
     }
 
     @Override
     public Optional<Category> retrieveById(Integer id) {
-
-        try (PreparedStatement ps = connection.prepareStatement(RERIEVEBYIDD)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapRow(rs));
             }
+            return Optional.empty();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException("Error retrieving category by id: " + id, e);
         }
-        return Optional.empty();
     }
 
     @Override
     public List<Category> retrieveAll() {
         List<Category> list = new ArrayList<>();
-
-        try (Statement stmt = (Statement) connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(RETRIEVEALLL);
+        try (PreparedStatement stmt = connection.prepareStatement(SELECT_ALL)) {
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 list.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException("Error retrieving all categories", e);
         }
         return list;
     }
 
     @Override
     public boolean deleteById(Integer id) {
-
         try (PreparedStatement ps = connection.prepareStatement(DELETE)) {
             ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
+            int deleted = ps.executeUpdate();
+            if (deleted == 0) {
+                throw new EntityNotFoundException("Category with id " + id + " not found for deletion");
+            }
+            return true;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException("Error deleting category with id: " + id, e);
         }
     }
 
     @Override
     public Category update(Category entity) {
-
-        try (PreparedStatement ps = connection.prepareStatement(UPDATECAT)) {
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setString(1, entity.getName());
-            ps.executeUpdate();
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                throw new EntityNotFoundException("Category with id " + entity.getId() + " not found for update");
+            }
             return entity;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException("Error updating category: " + entity, e);
         }
-
     }
 
     @Override
     public long count() {
-
-        try (Statement stmt = (Statement) connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery(COUNTCAT);
+        try (PreparedStatement stmt = connection.prepareStatement(COUNT)) {
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getLong(1);
             }
+            return 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Error counting users", e);
+            throw new RepositoryException("Error counting categories", e);
         }
-        return 0;
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Error checking existence for category id: " + id, e);
+        }
     }
 
     @Override
     public Optional<Category> retrieveByName(String name) {
-
-        try (PreparedStatement ps = connection.prepareStatement(RETRIEVENAME)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_NAME)) {
             ps.setString(1, "%" + name + "%");
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+            if (rs.next()) {
                 return Optional.of(mapRow(rs));
             }
+            return Optional.empty();
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving users by name", e);
+            throw new RepositoryException("Error retrieving category by name: " + name, e);
         }
-        return Optional.empty();
     }
 
     private Category mapRow(ResultSet rs) throws SQLException {
-        return Category.builder().name(rs.getString("name")).id(rs.getInt("id")).build();
+        return Category.builder()
+                .id(rs.getInt("id"))
+                .name(rs.getString("name"))
+                .build();
     }
 
     public static void main(String[] args) {
         CategoryRepositoryImpl categoryRepository = new CategoryRepositoryImpl();
-//        categoryRepository.retrieveAll().forEach(System.out::println);
-//        System.out.println(categoryRepository.create(Category.builder().id(1).build()).toString());
-        Category category = categoryRepository.retrieveById(3).get();
-
+        Category category = categoryRepository.retrieveById(3).orElseThrow();
         System.out.println(category.getName());
         System.out.println(categoryRepository.count());
-
     }
-
 }
-
-
-

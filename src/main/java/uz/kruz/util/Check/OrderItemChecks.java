@@ -1,4 +1,4 @@
-package uz.kruz.util.orderItemCheck;
+package uz.kruz.util.Check;
 
 import uz.kruz.dto.OrderItemDTO;
 

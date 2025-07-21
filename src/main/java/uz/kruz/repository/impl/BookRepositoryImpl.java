@@ -1,16 +1,13 @@
 package uz.kruz.repository.impl;
 
-import org.mariadb.jdbc.Statement;
 import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Book;
-import uz.kruz.domain.User;
 import uz.kruz.repository.BookRepository;
+import uz.kruz.util.exceptions.DatabaseUnavailableException;
+import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RepositoryException;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,33 +15,31 @@ import java.util.Optional;
 public class BookRepositoryImpl implements BookRepository {
 
     private final Connection connection;
-    private final String INSERT = "INSERT INTO books (title, isbn, price, stock,published_year) VALUES (?, ?, ?, ?, ?)";
-    private final String SELECTBYID = "SELECT * FROM books WHERE id = ?";
-    private final String DELETEBYID = "DELETE FROM books WHERE id = ?";
-    private final String SELECTALL = "SELECT * FROM books";
-    private final String UPDATE = "UPDATE books SET title = ?, isbn = ?, price = ?, stock = ?,published_year = ? where id = ?";
-    private final String COUNT = "SELECT COUNT(*) FROM books";
-    private final String BYISBN = "SELECT * FROM books WHERE isbn = ?";
-    private final String BYTITLE = "SELECT * FROM books WHERE title = ?";
-    private final String BYCATEGORY = "SELECT * FROM books WHERE title = ?";
-    private final String BYPUBLISHER = "SELECT * FROM books WHERE published_year = ?";
-    private final String BYAUTHORID = "SELECT * FROM books WHERE published_year = ?";
-    private final String BYSTOCKLESS = "SELECT * FROM books WHERE stock < ?";
 
+    private static final String INSERT = "INSERT INTO books (title, isbn, price, stock, published_year) VALUES (?, ?, ?, ?, ?)";
+    private static final String SELECT_BY_ID = "SELECT * FROM books WHERE id = ?";
+    private static final String DELETE_BY_ID = "DELETE FROM books WHERE id = ?";
+    private static final String SELECT_ALL = "SELECT * FROM books";
+    private static final String UPDATE = "UPDATE books SET title = ?, isbn = ?, price = ?, stock = ?, published_year = ? WHERE id = ?";
+    private static final String COUNT = "SELECT COUNT(*) FROM books";
+    private static final String BY_ISBN = "SELECT * FROM books WHERE isbn = ?";
+    private static final String BY_TITLE = "SELECT * FROM books WHERE title = ?";
+    private static final String BY_CATEGORY = "SELECT * FROM books WHERE category_id = ?";
+    private static final String BY_PUBLISHER = "SELECT * FROM books WHERE publisher_id = ?";
+    private static final String BY_AUTHOR_ID = "SELECT b.* FROM books b JOIN book_authors ba ON b.id = ba.book_id WHERE ba.author_id = ?";
+    private static final String BY_STOCK_LESS = "SELECT * FROM books WHERE stock < ?";
 
     public BookRepositoryImpl() {
         try {
             this.connection = DatabaseConnection.getInstance().getConnection();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to initialize database connection", e);
+            throw new DatabaseUnavailableException("Failed to initialize database connection", e);
         }
     }
 
     @Override
     public Book create(Book entity) {
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
+        try (PreparedStatement ps = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, entity.getTitle());
             ps.setString(2, entity.getIsbn());
             ps.setBigDecimal(3, entity.getPrice());
@@ -58,136 +53,120 @@ public class BookRepositoryImpl implements BookRepository {
             }
             return entity;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException("Error creating book", e);
         }
-
     }
 
     @Override
     public Optional<Book> retrieveById(Integer id) {
-
-        try (PreparedStatement ps = connection.prepareStatement(SELECTBYID)) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-//                ------------------------
                 return Optional.of(mapRow(rs));
             }
+            return Optional.empty();
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving book by id", e);
+            throw new RepositoryException("Error retrieving book by id", e);
         }
-        return Optional.empty();
     }
 
     @Override
     public List<Book> retrieveAll() {
-
         List<Book> books = new ArrayList<>();
-
-        try (Statement statement = (Statement) connection.createStatement()) {
-            ResultSet rs = statement.executeQuery(SELECTALL);
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_ALL)) {
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 books.add(mapRow(rs));
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving all books", e);
+            throw new RepositoryException("Error retrieving all books", e);
         }
         return books;
     }
 
     @Override
     public boolean deleteById(Integer id) {
-
-        try (PreparedStatement ps = connection.prepareStatement(DELETEBYID)) {
+        try (PreparedStatement ps = connection.prepareStatement(DELETE_BY_ID)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting book", e);
+            throw new RepositoryException("Error deleting book", e);
         }
     }
 
     @Override
     public Book update(Book entity) {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
-
             ps.setString(1, entity.getTitle());
             ps.setString(2, entity.getIsbn());
             ps.setBigDecimal(3, entity.getPrice());
             ps.setInt(4, entity.getStock());
             ps.setInt(5, entity.getPublishedYear());
-            ps.setInt(6, entity.getId());
-            if (ps.executeUpdate() > 0)
-                return entity;
-            else
-                return null;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
 
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+                throw new EntityNotFoundException("No book found for update with ID: " + entity.getId());
+            }
+            return entity;
+        } catch (SQLException e) {
+            throw new RepositoryException("Error updating book", e);
+        }
     }
 
     @Override
     public long count() {
-
-        try (Statement statement = (Statement) connection.createStatement()) {
-            ResultSet rs = statement.executeQuery(COUNT);
+        try (PreparedStatement ps = connection.prepareStatement(COUNT)) {
+            ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getLong(1);
             }
-
+            return 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Error counting books", e);
+            throw new RepositoryException("Error counting books", e);
         }
-        throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
     public Optional<Book> retrieveByIsbn(String isbn) {
-
-        try (PreparedStatement ps = connection.prepareStatement(BYISBN)) {
-            ps.setInt(1, Integer.parseInt(isbn));
+        try (PreparedStatement ps = connection.prepareStatement(BY_ISBN)) {
+            ps.setString(1, isbn);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving book by isbn", e);
+            throw new RepositoryException("Error retrieving book by ISBN", e);
         }
-        throw new UnsupportedOperationException("Method not implemented");
+        return Optional.empty();
     }
 
     @Override
     public List<Book> retrieveByTitle(String title) {
         List<Book> books = new ArrayList<>();
-
-        try (PreparedStatement ps = connection.prepareStatement(BYTITLE)) {
+        try (PreparedStatement ps = connection.prepareStatement(BY_TITLE)) {
             ps.setString(1, title);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
                 books.add(mapRow(rs));
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving book by title", e);
+            throw new RepositoryException("Error retrieving book by title", e);
         }
         return books;
-
     }
 
     @Override
     public List<Book> retrieveByCategoryId(Integer categoryId) {
         List<Book> books = new ArrayList<>();
-
-        try (PreparedStatement ps = connection.prepareStatement(BYCATEGORY)) {
+        try (PreparedStatement ps = connection.prepareStatement(BY_CATEGORY)) {
             ps.setInt(1, categoryId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 books.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving book by category by id", e);
+            throw new RepositoryException("Error retrieving books by category ID", e);
         }
         return books;
     }
@@ -195,15 +174,14 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> retrieveByPublisherId(Integer publisherId) {
         List<Book> books = new ArrayList<>();
-
-        try (PreparedStatement ps = connection.prepareStatement(BYPUBLISHER)) {
+        try (PreparedStatement ps = connection.prepareStatement(BY_PUBLISHER)) {
             ps.setInt(1, publisherId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 books.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving book by publisher id", e);
+            throw new RepositoryException("Error retrieving books by publisher ID", e);
         }
         return books;
     }
@@ -211,15 +189,14 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> retrieveByAuthorId(Integer authorId) {
         List<Book> books = new ArrayList<>();
-
-        try (PreparedStatement ps = connection.prepareStatement(BYAUTHORID)) {
+        try (PreparedStatement ps = connection.prepareStatement(BY_AUTHOR_ID)) {
             ps.setInt(1, authorId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 books.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving book by author id", e);
+            throw new RepositoryException("Error retrieving books by author ID", e);
         }
         return books;
     }
@@ -227,17 +204,27 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> retrieveByStockLessThan(Integer amount) {
         List<Book> books = new ArrayList<>();
-
-        try (PreparedStatement ps = connection.prepareStatement(BYSTOCKLESS)) {
+        try (PreparedStatement ps = connection.prepareStatement(BY_STOCK_LESS)) {
             ps.setInt(1, amount);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 books.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving book by Stock", e);
+            throw new RepositoryException("Error retrieving books with stock less than " + amount, e);
         }
         return books;
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_ID)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            throw new RepositoryException("Error checking existence of book by ID", e);
+        }
     }
 
     private Book mapRow(ResultSet rs) throws SQLException {
@@ -250,6 +237,4 @@ public class BookRepositoryImpl implements BookRepository {
                 .publishedYear(rs.getInt("published_year"))
                 .build();
     }
-
-
 }
