@@ -19,22 +19,26 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review register(ReviewDTO dto) {
-        throw new UnsupportedOperationException("Method not implemented");
+        Review review=Review.builder().userId(dto.getUserId()).
+                bookId(dto.getBookId()).
+                rating(dto.getRating()).
+                comment(dto.getComment()).build();
+        return reviewRepository.create(review);
     }
 
     @Override
     public Optional<Review> findById(Integer id) {
-        throw new UnsupportedOperationException("Method not implemented");
+        return reviewRepository.retrieveById(id);
     }
 
     @Override
     public List<Review> findAll() {
-        throw new UnsupportedOperationException("Method not implemented");
+        return reviewRepository.retrieveAll();
     }
 
     @Override
     public boolean removeById(Integer id) {
-        throw new UnsupportedOperationException("Method not implemented");
+        return reviewRepository.deleteById(id);
     }
 
     @Override

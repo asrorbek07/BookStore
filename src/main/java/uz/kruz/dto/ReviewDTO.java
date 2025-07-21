@@ -10,4 +10,8 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class ReviewDTO extends BaseDTO {
+    private Integer userId;
+    private Integer bookId;
+    private Integer rating;
+    private String comment;
 }
