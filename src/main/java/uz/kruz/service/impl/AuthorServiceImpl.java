@@ -7,6 +7,9 @@ import uz.kruz.repository.AuthorRepository;
 import uz.kruz.repository.BookRepository;
 import uz.kruz.service.AuthorService;
 import uz.kruz.util.StringUtil;
+import uz.kruz.util.Validator;
+import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.ServiceException;
 
 
 import java.sql.*;
@@ -24,11 +27,14 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Author register(AuthorDTO dto) {
-        if (StringUtil.isEmpty(dto.getFullName())) {
-            throw new IllegalArgumentException("full name must not be empty");
+        if (dto == null) {
+            throw new ServiceException("AuthorDTO is null");
         }
-        if(authorRepository.retrieveByName(dto.getFullName())!=null){
-            throw new RuntimeException(String.format("Author with name %s already exists", dto.getFullName()));
+        Validator.validateString(dto.getFullName(),"FulName");
+        authorRepository.retrieveByName(dto.getFullName());
+
+        if (dto.getFullName()!=null) {
+            Validator.validateString(dto.getFullName(),"FullName");
         }
 
         Author author = Author.builder()
@@ -41,7 +47,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Optional<Author> findById(Integer id) {
-
+        Validator.validateId(id);
 
         return authorRepository.retrieveById(id);
 
@@ -56,15 +62,24 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public boolean removeById(Integer id) {
-
+        Validator.validateId(id);
+        if (authorRepository.retrieveById(id).isEmpty()) {
+            throw new EntityNotFoundException(String.format("Author with ID '%d' not found", id));
+        }
         return authorRepository.deleteById(id);
     }
 
     @Override
     public Author modify(AuthorDTO dto, Integer id) {
-        Author author = authorRepository.retrieveById(id).orElseThrow(()-> new RuntimeException(String.format("Author with id %d does not exists", id)));
-        if(dto.getFullName()!=null && ! StringUtil.isEmpty(dto.getFullName())){
+        Validator.validateId(id);
+
+        Author author = authorRepository.retrieveById(id)
+                .orElseThrow(()-> new EntityNotFoundException(String.format("Author with ID '%d' not found", id)));
+        boolean modified = false;
+        if(dto.getFullName()!=null){
+            Validator.validateString(dto.getFullName(),"FullName");
             author.setFullName(dto.getFullName());
+            modified=true;
         }
         return authorRepository.update(author);
     }
@@ -82,10 +97,8 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<Author> findByName(String name) {
-        if (name==null|| StringUtil.isEmpty(name)) {
-            throw new IllegalArgumentException("name must not be empty or null");
+        Validator.validateString(name,"FullName");
 
-        }
         return authorRepository.retrieveByName(name);
     }
 
