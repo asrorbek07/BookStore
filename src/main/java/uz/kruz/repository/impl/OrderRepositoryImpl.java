@@ -5,7 +5,7 @@ import uz.kruz.domain.Order;
 import uz.kruz.domain.vo.OrderStatus;
 import uz.kruz.repository.OrderRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 
 import java.math.BigDecimal;
@@ -89,7 +89,7 @@ public class OrderRepositoryImpl implements OrderRepository {
             ps.setInt(1, id);
             int rows = ps.executeUpdate();
             if (rows == 0) {
-                throw new EntityNotFoundException("No order found with id: " + id);
+                throw new RowNotFoundException("No order found with id: " + id);
             }
             return true;
         } catch (SQLException e) {
@@ -105,7 +105,7 @@ public class OrderRepositoryImpl implements OrderRepository {
             ps.setString(3, entity.getStatus().name());
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new EntityNotFoundException("Order not found for update: " + entity.getId());
+                throw new RowNotFoundException("Order not found for update: " + entity.getId());
             }
             return entity;
         } catch (SQLException e) {
