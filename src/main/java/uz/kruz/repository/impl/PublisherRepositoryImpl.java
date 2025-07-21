@@ -4,7 +4,7 @@ import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Publisher;
 import uz.kruz.repository.PublisherRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 
 import java.sql.*;
@@ -83,7 +83,7 @@ public class PublisherRepositoryImpl implements PublisherRepository {
             ps.setInt(1, id);
             int deleted = ps.executeUpdate();
             if (deleted == 0) {
-                throw new EntityNotFoundException("Publisher not found for ID: " + id);
+                throw new RowNotFoundException("Publisher not found for ID: " + id);
             }
             return true;
         } catch (SQLException e) {
@@ -99,7 +99,7 @@ public class PublisherRepositoryImpl implements PublisherRepository {
             ps.setString(3, entity.getPhone());
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new EntityNotFoundException("Publisher not found for ID: " + entity.getId());
+                throw new RowNotFoundException("Publisher not found for ID: " + entity.getId());
             }
             return entity;
         } catch (SQLException e) {

@@ -1,6 +1,6 @@
 package uz.kruz.util.exceptions;
 
-public class EntityNotFoundException extends RepositoryException {
+public class EntityNotFoundException extends ServiceException {
 
     public EntityNotFoundException(String message) {
         super(message);

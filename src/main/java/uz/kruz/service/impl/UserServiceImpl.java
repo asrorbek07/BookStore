@@ -1,12 +1,14 @@
 package uz.kruz.service.impl;
 
-import jdk.jshell.spi.ExecutionControl;
 import uz.kruz.domain.User;
 import uz.kruz.domain.vo.UserRole;
 import uz.kruz.dto.UserDTO;
 import uz.kruz.repository.UserRepository;
 import uz.kruz.service.UserService;
-import uz.kruz.util.StringUtil;
+import uz.kruz.util.Validator;
+import uz.kruz.util.exceptions.DuplicateEntityException;
+import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.ServiceException;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,34 +23,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(UserDTO dto) {
-        if (StringUtil.isEmpty(dto.getEmail())) {
-            throw new IllegalArgumentException("email must not be empty");
+        if (dto == null) {
+            throw new ServiceException("UserDTO must not be null");
         }
-        if (userRepository.retrieveByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException(String.format("User with email %s already exists", dto.getEmail()));
+        Validator.validateString(dto.getEmail(), "Email");
+        Validator.validateString(dto.getPassword(), "Password");
+        userRepository.retrieveByEmail(dto.getEmail())
+                .ifPresent(existing -> {
+                    throw new DuplicateEntityException(String.format("User with email '%s' already exists", dto.getEmail()));
+                });
+        if (dto.getFullName() != null) {
+            Validator.validateString(dto.getFullName(), "Full name");
         }
-        if (StringUtil.isEmpty(dto.getPassword()) ||
-                StringUtil.isEmpty(dto.getFullName()) ||
-                StringUtil.isEmpty(dto.getPhoneNumber())) {
-            throw new IllegalArgumentException("fields must not be empty");
+        if (dto.getPhoneNumber() != null) {
+            Validator.validateString(dto.getPhoneNumber(), "Phone number");
         }
-
+        UserRole role = dto.getRole() != null ? dto.getRole() : UserRole.CUSTOMER;
         User user = User.builder()
-                .phone(dto.getPhoneNumber())
                 .email(dto.getEmail())
-                .fullName(dto.getFullName())
                 .password(dto.getPassword())
-                .role(dto.getRole())
+                .fullName(dto.getFullName())        // may be null
+                .phone(dto.getPhoneNumber())        // may be null
+                .role(role)
                 .build();
         return userRepository.create(user);
-
     }
+
 
     @Override
     public Optional<User> findById(Integer id) {
-        if (id == null) {
-            throw new IllegalArgumentException("id must not be null");
-        }
+        Validator.validateId(id);
         return userRepository.retrieveById(id);
     }
 
@@ -59,18 +63,52 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean removeById(Integer id) {
+        Validator.validateId(id);
+
+        if (userRepository.retrieveById(id).isEmpty()) {
+            throw new EntityNotFoundException(String.format("User with ID '%d' not found", id));
+        }
+
         return userRepository.deleteById(id);
     }
 
     @Override
     public User modify(UserDTO dto, Integer id) {
-        User user = userRepository.retrieveById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        if (dto.getFullName() != null && !StringUtil.isEmpty(dto.getFullName())) {
+        Validator.validateId(id);
+
+        User user = userRepository.retrieveById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with ID '%d' not found", id)));
+
+        boolean modified = false;
+
+        if (dto.getFullName() != null) {
+            Validator.validateString(dto.getFullName(), "Full name");
             user.setFullName(dto.getFullName());
+            modified = true;
+        }
+
+        if (dto.getPhoneNumber() != null) {
+            Validator.validateString(dto.getPhoneNumber(), "Phone number");
+            user.setPhone(dto.getPhoneNumber());
+            modified = true;
+        }
+
+        if (dto.getPassword() != null) {
+            Validator.validateString(dto.getPassword(), "Password");
+            user.setPassword(dto.getPassword());
+            modified = true;
+        }
+
+        if (dto.getRole() != null) {
+            user.setRole(dto.getRole());
+            modified = true;
+        }
+
+        if (!modified) {
+            throw new ServiceException("No fields provided for update");
         }
 
         return userRepository.update(user);
-
     }
 
     @Override
@@ -80,24 +118,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        if (StringUtil.isEmpty(email)) {
-            return userRepository.retrieveByEmail(email);
-        } else
-            throw new RuntimeException(String.format("User with email %s already exists", email));
+        Validator.validateString(email, "Email");
+        return userRepository.retrieveByEmail(email);
     }
 
     @Override
     public List<User> findByName(String name) {
-        if (StringUtil.isEmpty(name)) {
-            return userRepository.retrieveByName(name);
-        }
-        throw new UnsupportedOperationException("Method not implemented");
+        Validator.validateString(name, "Name");
+        return userRepository.retrieveByName(name);
     }
 
     @Override
     public List<User> findByRole(UserRole role) {
-        if (StringUtil.isEmpty(role.name()))
-            return userRepository.retrieveByRole(role);
-        throw new UnsupportedOperationException("Method not implemented");
+        if (role == null) {
+            throw new ServiceException("Role must not be null");
+        }
+
+        return userRepository.retrieveByRole(role);
     }
 }

@@ -4,8 +4,8 @@ import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Author;
 import uz.kruz.repository.AuthorRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.DuplicateEntityException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.DuplicateRowException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 
 import java.sql.*;
@@ -48,7 +48,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
             }
             return entity;
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new DuplicateEntityException("Author already exists: " + entity.getFullName(), e);
+            throw new DuplicateRowException("Author already exists: " + entity.getFullName(), e);
         } catch (SQLException e) {
             throw new RepositoryException("Error creating author: " + entity, e);
         }
@@ -89,7 +89,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
             ps.setInt(1, id);
             int rows = ps.executeUpdate();
             if (rows == 0) {
-                throw new EntityNotFoundException("Author not found for deletion with ID: " + id);
+                throw new RowNotFoundException("Author not found for deletion with ID: " + id);
             }
             return true;
         } catch (SQLException e) {
@@ -103,11 +103,11 @@ public class AuthorRepositoryImpl implements AuthorRepository {
             ps.setString(1, entity.getFullName());
             int rows = ps.executeUpdate();
             if (rows == 0) {
-                throw new EntityNotFoundException("Author not found for update with ID: " + entity.getId());
+                throw new RowNotFoundException("Author not found for update with ID: " + entity.getId());
             }
             return entity;
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new DuplicateEntityException("Another author with the same name already exists: " + entity.getFullName(), e);
+            throw new DuplicateRowException("Another author with the same name already exists: " + entity.getFullName(), e);
         } catch (SQLException e) {
             throw new RepositoryException("Error updating author: " + entity, e);
         }

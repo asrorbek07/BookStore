@@ -1,6 +1,6 @@
 package uz.kruz.util.exceptions;
 
-public class DuplicateEntityException extends RepositoryException {
+public class DuplicateEntityException extends ServiceException {
 
     public DuplicateEntityException(String message) {
         super(message);

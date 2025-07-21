@@ -3,7 +3,7 @@ package uz.kruz.repository.impl;
 import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.BookAuthor;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.repository.BookAuthorRepository;
 
@@ -86,7 +86,7 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
             ps.setInt(1, id);
             int rows = ps.executeUpdate();
             if (rows == 0) {
-                throw new EntityNotFoundException("No book-author found for deletion with ID: " + id);
+                throw new RowNotFoundException("No book-author found for deletion with ID: " + id);
             }
             return true;
         } catch (SQLException e) {
@@ -101,7 +101,7 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
             ps.setInt(2, entity.getAuthorId());
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new EntityNotFoundException("No book-author found for update with ID: " + entity.getId());
+                throw new RowNotFoundException("No book-author found for update with ID: " + entity.getId());
             }
             return entity;
         } catch (SQLException e) {

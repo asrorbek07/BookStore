@@ -4,7 +4,7 @@ import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Shipment;
 import uz.kruz.repository.ShipmentRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 
 import java.sql.*;
@@ -90,7 +90,7 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
             ps.setInt(1, id);
             int deleted = ps.executeUpdate();
             if (deleted == 0) {
-                throw new EntityNotFoundException("Shipment with id " + id + " not found for deletion");
+                throw new RowNotFoundException("Shipment with id " + id + " not found for deletion");
             }
             return true;
         } catch (SQLException e) {
@@ -107,7 +107,7 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
             ps.setDate(4, Date.valueOf(entity.getDeliveryEstimate()));
             int updated = ps.executeUpdate();
             if (updated == 0) {
-                throw new EntityNotFoundException("Shipment with id " + entity.getId() + " not found for update");
+                throw new RowNotFoundException("Shipment with id " + entity.getId() + " not found for update");
             }
             return entity;
         } catch (SQLException e) {
