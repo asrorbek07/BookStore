@@ -60,6 +60,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public List<Review> findByUserId(Integer userId) {
         throw new UnsupportedOperationException("Method not implemented");
     }

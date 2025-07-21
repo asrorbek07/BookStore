@@ -117,6 +117,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return userRepository.existsById(integer);
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
         Validator.validateString(email, "Email");
         return userRepository.retrieveByEmail(email);

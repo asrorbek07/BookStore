@@ -74,6 +74,11 @@ public class AuthorServiceImpl implements AuthorService {
         return authorRepository.count();
     }
 
+    @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
 
     @Override
     public List<Author> findByName(String name) {
