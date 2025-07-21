@@ -10,4 +10,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class CategoryDTO extends BaseDTO {
+    private String name;
+
 }
