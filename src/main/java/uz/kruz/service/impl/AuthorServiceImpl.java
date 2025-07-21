@@ -91,7 +91,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public boolean existsById(Integer integer) {
-        return false;
+        return authorRepository.existsById(integer);
     }
 
 
@@ -110,5 +110,6 @@ public class AuthorServiceImpl implements AuthorService {
         }
         return authorRepository.retrieveByBookId(bookId);
     }
+
 
 }
