@@ -11,7 +11,7 @@ public class Validator {
     }
 
     public static void validateString(String field, String fieldName) {
-        if (field == null || field.trim().isEmpty() || field.trim().equals(field)) {
+        if (field == null || field.trim().isEmpty() || !field.trim().equals(field)) {
             throw new ServiceException(String.format("%s must not be null or empty", fieldName));
         }
     }
