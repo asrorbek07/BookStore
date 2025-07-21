@@ -79,6 +79,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public Category findByName(String name) {
         Validator.validateString(name, "Name");
 

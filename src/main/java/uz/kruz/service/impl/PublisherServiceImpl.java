@@ -47,6 +47,11 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public Optional<Publisher> findByName(String name) {
         throw new UnsupportedOperationException("Method not implemented");
     }

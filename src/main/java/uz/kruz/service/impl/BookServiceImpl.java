@@ -80,6 +80,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public Optional<Book> findByIsbn(String isbn) {
         throw new UnsupportedOperationException("Method not implemented");
     }

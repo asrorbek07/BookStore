@@ -18,4 +18,6 @@ public interface Service<D extends BaseDTO, T, ID> {
     T modify(D dto, ID id);
 
     long count();
+
+    boolean existsById(ID id);
 }

@@ -66,6 +66,11 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public Optional<Shipment> findByTrackingNumber(String trackingNumber) {
         ShipmentCheck.findByTrackingNumberCheck(trackingNumber);
         return shipmentRepository.retrieveByTrackingNumber(trackingNumber);
