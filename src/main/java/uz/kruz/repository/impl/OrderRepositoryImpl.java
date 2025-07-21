@@ -103,7 +103,6 @@ public class OrderRepositoryImpl implements OrderRepository {
             ps.setInt(1, entity.getUserId());
             ps.setBigDecimal(2, entity.getTotalAmount());
             ps.setString(3, entity.getStatus().name());
-            ps.setInt(4, entity.getId());
             int updated = ps.executeUpdate();
             if (updated == 0) {
                 throw new EntityNotFoundException("Order not found for update: " + entity.getId());
