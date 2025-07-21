@@ -119,6 +119,11 @@ public class PublisherRepositoryImpl implements PublisherRepository {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public Optional<Publisher> retrieveByName(String name) {
         try(PreparedStatement ps = connection.prepareStatement(SELECT_BY_NAME)) {
             ps.setString(1, "%" + name + "%");

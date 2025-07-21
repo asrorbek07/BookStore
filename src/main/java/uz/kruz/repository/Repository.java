@@ -18,4 +18,6 @@ public interface Repository<T extends Entity, ID> {
     T update(T entity);
 
     long count();
+
+    boolean existsById(ID id);
 }

@@ -129,6 +129,11 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public List<Review> retrieveByUserId(Integer userId) {
         List<Review> reviews = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(SELECT_REVIEW_USER_ID)) {

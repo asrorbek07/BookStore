@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface BookAuthorRepository extends Repository<BookAuthor, Integer> {
 
-    List<BookAuthor> retrieveAll(String name);
-
     List<BookAuthor> retrieveByBookId(Integer bookId);
 
     List<BookAuthor> retrieveByAuthorId(Integer authorId);

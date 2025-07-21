@@ -125,6 +125,11 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public Optional<Shipment> retrieveByTrackingNumber(String trackingNumber) {
 
         try(PreparedStatement ps = connection.prepareStatement(SELECT_BY_TM)) {

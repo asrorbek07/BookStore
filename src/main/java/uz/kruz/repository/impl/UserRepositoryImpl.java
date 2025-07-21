@@ -119,6 +119,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public boolean existsById(Integer integer) {
+        return false;
+    }
+
+    @Override
     public Optional<User> retrieveByEmail(String email) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_EMAIL)) {
             ps.setString(1, email);
