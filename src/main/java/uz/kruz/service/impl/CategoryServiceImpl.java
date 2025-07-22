@@ -87,7 +87,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Category findByName(String name) {
         Validator.validateString(name, "Name");
 
-        return categoryRepository.retrieveByName(name).orElseThrow();
+        return categoryRepository.retrieveByName(name)
+                                .orElseThrow(()-> new EntityNotFoundException(String.format("Category with name '%s' not found", name)));
 
     }
 

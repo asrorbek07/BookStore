@@ -21,7 +21,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     private static final String DELETE = "DELETE FROM categories WHERE id=?";
     private static final String UPDATE = "UPDATE categories SET name=? WHERE id=?";
     private static final String COUNT = "SELECT COUNT(*) FROM categories";
-    private static final String SELECT_BY_NAME = "SELECT * FROM categories WHERE name LIKE ?";
+    private static final String SELECT_BY_NAME = "SELECT * FROM categories WHERE name =?";
 
     public CategoryRepositoryImpl() {
         try {
@@ -92,6 +92,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public Category update(Category entity) {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setString(1, entity.getName());
+            ps.setInt(2, entity.getId());
             int updated = ps.executeUpdate();
             if (updated == 0) {
                 throw new RowNotFoundException("Category with id " + entity.getId() + " not found for update");
@@ -130,7 +131,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public Optional<Category> retrieveByName(String name) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_NAME)) {
-            ps.setString(1, "%" + name + "%");
+            ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapRow(rs));
