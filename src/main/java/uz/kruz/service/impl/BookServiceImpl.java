@@ -29,11 +29,15 @@ public class BookServiceImpl implements BookService {
         if (dto == null) {
             throw new ServiceException("BookDTO must not be null");
         }
-        Validator.validateString(dto.getTitle(), "Title");
+        if (dto.getTitle() != null) {
+            Validator.validateString(dto.getTitle(), "Title");
+        }
         Validator.validateBigDecimal(dto.getPrice(), "Price");
         Validator.validateInteger(dto.getStock(), "Stock");
         Validator.validateInteger(dto.getPublishedYear(), "Published Year");
+
         Validator.validateString(dto.getIsbn(), "ISBN");
+
         Validator.validateInteger(dto.getCategoryId(), "Category ID");
         Validator.validateInteger(dto.getPublisherId(), "Publisher ID");
         if (bookRepository.existsByIsbn(dto.getIsbn())) {
@@ -47,8 +51,6 @@ public class BookServiceImpl implements BookService {
         if (!publisherRepository.existsById(dto.getPublisherId())) {
             throw new RuntimeException(String.format("Publisher with ID %s does not exist", dto.getPublisherId()));
         }
-
-
 
 
         throw new UnsupportedOperationException("Method not implemented");
