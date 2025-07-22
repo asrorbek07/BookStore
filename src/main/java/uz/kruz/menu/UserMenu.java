@@ -30,7 +30,18 @@ public class UserMenu {
 			//
 			case 0:
 				this.exitProgram();
-
+				case 1:
+					narrator.sayln("Added User");
+					break;
+				case 2:
+					narrator.sayln("Deleted user");
+					break;
+					case 3:
+						narrator.sayln("View user");
+						break;
+						case 4:
+							narrator.sayln("Updated user");
+							break;
 			default:
 				narrator.sayln("Choose again!");
 			}
@@ -41,11 +52,13 @@ public class UserMenu {
 		//
 		narrator.sayln("");
 		narrator.sayln("..............................");
-		narrator.sayln(" Main menu ");
-		narrator.sayln("..............................");
-
-		narrator.sayln("..............................");
-		narrator.sayln(" 0. Exit program");
+		narrator.sayln(" User menu ");
+		narrator.sayln("...............................");
+		narrator.sayln("1. Add User ");
+		narrator.sayln("2. Delete User");
+		narrator.sayln("3. View User");
+		narrator.sayln("4. Update User");
+		narrator.sayln("0. Exit program");
 		narrator.sayln("..............................");
 	}
 
@@ -54,7 +67,7 @@ public class UserMenu {
 		narrator.say("Select: ");
 		int menuNumber = scanner.nextInt();
 
-		if (menuNumber >= 0 && menuNumber <= 6) {
+		if (menuNumber >= 0 && menuNumber <= 4) {
 			scanner.nextLine();
 			return menuNumber;
 		} else {
