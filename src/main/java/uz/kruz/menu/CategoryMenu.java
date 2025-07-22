@@ -6,13 +6,13 @@ import uz.kruz.util.TalkingAt;
 
 import java.util.Scanner;
 
-public class AuthorMenu {
+public class CategoryMenu {
 	//
 
 	private Scanner scanner;
 	private Narrator narrator;
 
-	public AuthorMenu() {
+	public CategoryMenu() {
 		//
 		this.scanner = new Scanner(System.in);
 		this.narrator = new Narrator(this, TalkingAt.Left);

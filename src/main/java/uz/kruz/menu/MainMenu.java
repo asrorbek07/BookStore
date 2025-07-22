@@ -14,6 +14,8 @@ public class MainMenu {
     private BookMenu bookMenu;
     private OrderMenu orderMenu;
     private ShipmentMenu shipmentMenu;
+    private ReviewMenu reviewMenu;
+    private CategoryMenu categoryMenu;
     private Scanner scanner;
     private Narrator narrator;
 
@@ -25,6 +27,8 @@ public class MainMenu {
         this.bookMenu = new BookMenu();
         this.orderMenu = new OrderMenu();
         this.shipmentMenu = new ShipmentMenu();
+        this.reviewMenu = new ReviewMenu();
+        this.categoryMenu = new CategoryMenu();
         this.scanner = new Scanner(System.in);
         this.narrator = new Narrator(this, TalkingAt.Left);
     }
@@ -56,6 +60,13 @@ public class MainMenu {
                     break;
                 case 6:
                     shipmentMenu.show();
+                    break;
+                case 7:
+                    reviewMenu.show();
+                    break;
+                case 8:
+                    categoryMenu.show();
+                    break;
                 case 0:
                     this.exitProgram();
 
@@ -77,6 +88,8 @@ public class MainMenu {
         narrator.sayln(" 4. Book menu");
         narrator.sayln(" 5. Order menu");
         narrator.sayln(" 6. Shipment menu");
+        narrator.sayln(" 7. Review menu");
+        narrator.sayln(" 8. Category menu");
         narrator.sayln("..............................");
         narrator.sayln(" 0. Exit program");
         narrator.sayln("..............................");
@@ -87,7 +100,7 @@ public class MainMenu {
         narrator.say("Select: ");
         int menuNumber = scanner.nextInt();
 
-        if (menuNumber >= 0 && menuNumber <= 6) {
+        if (menuNumber >= 0 && menuNumber <= 8) {
             scanner.nextLine();
             return menuNumber;
         } else {
