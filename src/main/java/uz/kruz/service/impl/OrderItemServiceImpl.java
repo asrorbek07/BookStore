@@ -5,7 +5,9 @@ import uz.kruz.dto.OrderItemDTO;
 import uz.kruz.repository.BookRepository;
 import uz.kruz.repository.OrderItemRepository;
 import uz.kruz.service.OrderItemService;
-import uz.kruz.util.Check.OrderItemChecks;
+import uz.kruz.util.Validator;
+import uz.kruz.util.exceptions.EntityNotFoundException;
+import uz.kruz.util.exceptions.ServiceException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,7 +26,13 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public OrderItem register(OrderItemDTO dto) {
 
-        OrderItemChecks.registerCheck(dto);
+        if (dto == null) {
+            throw new ServiceException("OrderItemDTO must not be null");
+        }
+        Validator.validateInteger(dto.getOrderId(), "OrderID");
+        Validator.validateInteger(dto.getBookId(), "BookID");
+        Validator.validateInteger(dto.getQuantity(), "Quantity");
+        Validator.validateBigDecimal(BigDecimal.valueOf(dto.getPrice()), "Price");
 
         OrderItem orderItem = OrderItem.builder()
                 .orderId(dto.getOrderId())
@@ -36,7 +44,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public Optional<OrderItem> findById(Integer id) {
-        OrderItemChecks.findByIdCheck(id);
+        Validator.validateInteger(id, "ID");
         return orderItemRepository.retrieveById(id);
     }
 
@@ -47,28 +55,39 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public boolean removeById(Integer id) {
-        OrderItemChecks.removeByIdCheck(id);
+        Validator.validateInteger(id, "ID");
         return orderItemRepository.deleteById(id);
     }
 
     @Override
     public OrderItem modify(OrderItemDTO dto, Integer id) {
-        OrderItem existing = orderItemRepository.retrieveById(id).orElseThrow(() -> new IllegalArgumentException("OrderItem with id " + id + " does not exist"));
-        OrderItemChecks.modifyCheck(dto);
+        Validator.validateInteger(id, "ID");
+        OrderItem existing = orderItemRepository.retrieveById(id)
+                .orElseThrow(() -> new EntityNotFoundException("OrderItem with id " + id + " does not exist"));
+
+        boolean modified = false;
+        if (dto.getOrderId() != null) {
+            Validator.validateInteger(dto.getOrderId(), "OrderID");
+            existing.setOrderId(dto.getOrderId());
+            modified = true;
+        }
         if(dto.getBookId() != null) {
-            bookRepository.retrieveById(dto.getBookId()).orElseThrow(() -> new IllegalArgumentException("Book with id " + dto.getBookId() + " does not exist"));
+            Validator.validateInteger(dto.getBookId(), "BookID");
+            existing.setBookId(dto.getBookId());
+            modified = true;
         }
         if (dto.getQuantity()!=null) {
-            if (dto.getQuantity() <= 0) {
-                throw new IllegalArgumentException("Quantity must be greater than 0");
-            }
+            Validator.validateInteger(dto.getQuantity(), "Quantity");
             existing.setQuantity(dto.getQuantity());
+            modified = true;
         }
         if (dto.getPrice()!=null) {
-            if (dto.getPrice() <= 0) {
-                throw new IllegalArgumentException("Price must be greater than 0");
-            }
+            Validator.validateBigDecimal(BigDecimal.valueOf(dto.getPrice()), "Price");
             existing.setPrice(BigDecimal.valueOf(dto.getPrice()));
+            modified = true;
+        }
+        if (!modified) {
+            throw new ServiceException("No fields provided for update");
         }
         return orderItemRepository.update(existing);
     }
@@ -80,24 +99,24 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public boolean existsById(Integer integer) {
-        return false;
+        return orderItemRepository.existsById(integer);
     }
 
     @Override
     public List<OrderItem> findByOrderId(Integer orderId) {
-        OrderItemChecks.findByOrderIdCheck(orderId);
+        Validator.validateInteger(orderId, "OrderID");
         return orderItemRepository.retrieveByOrderId(orderId);
     }
 
     @Override
     public List<OrderItem> findByBookId(Integer bookId) {
-        OrderItemChecks.findByBookIdCheck(bookId);
+        Validator.validateInteger(bookId, "BookID");
         return orderItemRepository.retrieveByBookId(bookId);
     }
 
     @Override
     public List<OrderItem> findByQuantityGreaterThan(Integer quantity) {
-        OrderItemChecks.findByQuantityCheck(quantity);
+        Validator.validateInteger(quantity, "Quantity");
         return orderItemRepository.retrieveByQuantityGreaterThan(quantity);
     }
 
