@@ -13,9 +13,9 @@ CREATE TABLE IF NOT EXISTS categories
 CREATE TABLE IF NOT EXISTS publishers
 (
     id            INT AUTO_INCREMENT PRIMARY KEY,
-    name          VARCHAR(100),
-    contact_email VARCHAR(100),
-    phone         VARCHAR(20),
+    name          VARCHAR(100) unique not null ,
+    contact_email VARCHAR(100) unique ,
+    phone         VARCHAR(20) unique ,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -33,10 +33,10 @@ CREATE TABLE IF NOT EXISTS authors
 CREATE TABLE IF NOT EXISTS users
 (
     id         INT AUTO_INCREMENT PRIMARY KEY,
-    full_name  VARCHAR(100),
-    email      VARCHAR(100) UNIQUE,
-    password   VARCHAR(100),
-    phone      VARCHAR(20),
+    full_name  VARCHAR(100) not null ,
+    email      VARCHAR(100) UNIQUE not null ,
+    password   VARCHAR(100) unique not null ,
+    phone      VARCHAR(20) unique ,
     role       ENUM ('CUSTOMER', 'ADMIN') DEFAULT 'CUSTOMER',
     created_at TIMESTAMP                  DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP                  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -46,11 +46,11 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TABLE IF NOT EXISTS books
 (
     id             INT AUTO_INCREMENT PRIMARY KEY,
-    title          VARCHAR(255),
-    isbn           VARCHAR(20) UNIQUE,
-    price          DECIMAL(10, 2),
-    stock          INT,
-    published_year INT,
+    title          VARCHAR(255) not null ,
+    isbn           VARCHAR(20) UNIQUE not null ,
+    price          DECIMAL(10, 2) not null ,
+    stock          INT not null ,
+    published_year INT not null ,
     category_id    INT,
     publisher_id   INT,
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -76,8 +76,8 @@ CREATE TABLE IF NOT EXISTS orders
 (
     id           INT AUTO_INCREMENT PRIMARY KEY,
     user_id      INT,
-    total_amount DECIMAL(10, 2),
-    status       ENUM ('PENDING', 'CONFIRMED', 'CANCELLED'),
+    total_amount DECIMAL(10, 2) not null ,
+    status       ENUM ('PENDING', 'CONFIRMED', 'CANCELLED') not null ,
     order_date   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id)
@@ -89,8 +89,8 @@ CREATE TABLE IF NOT EXISTS order_items
     id         INT AUTO_INCREMENT PRIMARY KEY,
     order_id   INT,
     book_id    INT,
-    quantity   INT,
-    price      DECIMAL(10, 2),
+    quantity   INT not null ,
+    price      DECIMAL(10, 2) not null ,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders (id),
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS shipments
 (
     id                INT AUTO_INCREMENT PRIMARY KEY,
     order_id          INT,
-    tracking_number   VARCHAR(100),
+    tracking_number   VARCHAR(100) not null ,
     shipped_at        TIMESTAMP,
     delivery_estimate DATE,
     created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
