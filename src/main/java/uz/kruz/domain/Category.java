@@ -8,6 +8,7 @@ import uz.kruz.domain.vo.BaseEntity;
 @Getter
 @Setter
 @SuperBuilder
+@ToString(callSuper = true)
 public class Category extends BaseEntity {
     private String name;
 }

@@ -55,8 +55,8 @@ CREATE TABLE IF NOT EXISTS books
     publisher_id   INT,
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories (id),
-    FOREIGN KEY (publisher_id) REFERENCES publishers (id)
+    FOREIGN KEY (category_id) REFERENCES categories (id) on delete set null ,
+    FOREIGN KEY (publisher_id) REFERENCES publishers (id) on delete set null
 );
 
 -- Book Authors junction table
@@ -67,8 +67,8 @@ CREATE TABLE IF NOT EXISTS book_authors
     author_id  INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (book_id) REFERENCES books (id) on delete cascade,
-    FOREIGN KEY (author_id) REFERENCES authors (id) on delete cascade
+    FOREIGN KEY (book_id) REFERENCES books (id) on delete set null ,
+    FOREIGN KEY (author_id) REFERENCES authors (id) on delete set null
 );
 
 -- Orders table
