@@ -138,7 +138,6 @@ public class UserServiceImpl implements UserService {
         if (role == null) {
             throw new ServiceException("Role must not be null");
         }
-
         return userRepository.retrieveByRole(role);
     }
 }

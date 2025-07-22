@@ -85,17 +85,37 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public boolean deleteById(Integer id) {
-        try (PreparedStatement ps = connection.prepareStatement(DELETE_BY_ID)) {
-            ps.setInt(1, id);
-            int rows = ps.executeUpdate();
-            if (rows == 0) {
-                throw new RowNotFoundException("No order found with id: " + id);
+        try {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement deleteItems = connection.prepareStatement("DELETE FROM order_items WHERE order_id = ?")) {
+                deleteItems.setInt(1, id);
+                deleteItems.executeUpdate();
             }
+
+            try (PreparedStatement deleteOrder = connection.prepareStatement(DELETE_BY_ID)) {
+                deleteOrder.setInt(1, id);
+                int rows = deleteOrder.executeUpdate();
+                if (rows == 0) {
+                    connection.rollback();
+                    throw new RowNotFoundException("No order found with id: " + id);
+                }
+            }
+
+            connection.commit();
+
             return true;
+
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RepositoryException("Rollback failed", ex);
+            }
             throw new RepositoryException("Error deleting order with id: " + id, e);
         }
     }
+
 
     @Override
     public Order update(Order entity) {
