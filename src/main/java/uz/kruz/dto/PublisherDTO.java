@@ -10,4 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class PublisherDTO extends BaseDTO {
+    private String name;
+    private String contact_email;
+    private String phone;
 }

@@ -160,6 +160,11 @@ public class PublisherRepositoryImpl implements PublisherRepository {
         return publishers;
     }
 
+    @Override
+    public Optional<Publisher> findFirstByEmail(String email) {
+        return Optional.empty();
+    }
+
     private Publisher mapRow(ResultSet rs) throws SQLException {
         return Publisher.builder()
                 .id(rs.getInt("id"))
