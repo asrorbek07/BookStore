@@ -1,6 +1,7 @@
 package uz.kruz.menu;
 
 
+import uz.kruz.console.PublisherConsole;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
 
@@ -8,12 +9,13 @@ import java.util.Scanner;
 
 public class PublisherMenu {
 	//
-
+	PublisherConsole publisherConsole;
 	private Scanner scanner;
 	private Narrator narrator;
 
 	public PublisherMenu() {
 		//
+		this.publisherConsole = new PublisherConsole();
 		this.scanner = new Scanner(System.in);
 		this.narrator = new Narrator(this, TalkingAt.Left);
 	}
@@ -31,7 +33,7 @@ public class PublisherMenu {
 			case 0:
 				this.exitProgram();
 				case 1:
-					narrator.sayln("Added publisher");
+					publisherConsole.register();
 					break;
 					case 2:
 						narrator.sayln("deleted publisher");
