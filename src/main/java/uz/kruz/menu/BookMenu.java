@@ -1,6 +1,7 @@
 package uz.kruz.menu;
 
 
+import uz.kruz.console.BookConsole;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
 
@@ -11,6 +12,7 @@ public class BookMenu {
 
     private Scanner scanner;
     private Narrator narrator;
+    private BookConsole bookConsole;
 
     public BookMenu() {
         //
@@ -28,7 +30,7 @@ public class BookMenu {
 
             switch (inputNumber) {
                 case 1:
-                    narrator.sayln("New Book added");
+                    bookConsole.register();
                     break;
                 case 2:
                     narrator.sayln("New Book updated");

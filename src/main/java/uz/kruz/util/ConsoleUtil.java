@@ -1,5 +1,6 @@
 package uz.kruz.util;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class ConsoleUtil {
@@ -25,5 +26,18 @@ public class ConsoleUtil {
 		String inputStr = scanner.nextLine();
 		inputStr = inputStr.trim();
 		return inputStr;
+	}
+
+	public BigDecimal getValueOfBigDecimal(String label){
+		narrator.say(label + ": ");
+		String inputStr = scanner.nextLine();
+		inputStr = inputStr.trim();
+		return new BigDecimal(inputStr);
+	}
+	public Integer getValueOfInteger(String label){
+		narrator.say(label + ": ");
+		String inputStr = scanner.nextLine();
+		inputStr = inputStr.trim();
+		return Integer.parseInt(inputStr);
 	}
 }
