@@ -14,15 +14,19 @@ import java.util.Optional;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
-    private final CategoryRepository categoryRepository;
-    private final PublisherRepository publisherRepository;
-    private final AuthorRepository authorRepository;
+    private  CategoryRepository categoryRepository;
+    private  PublisherRepository publisherRepository;
+    private  AuthorRepository authorRepository;
 
     public BookServiceImpl(BookRepository bookRepository, CategoryRepository categoryRepository, PublisherRepository publisherRepository, AuthorRepository authorRepository) {
         this.bookRepository = bookRepository;
         this.categoryRepository = categoryRepository;
         this.publisherRepository = publisherRepository;
         this.authorRepository = authorRepository;
+    }
+
+    public BookServiceImpl(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
     @Override
