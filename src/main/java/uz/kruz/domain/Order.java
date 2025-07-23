@@ -23,4 +23,14 @@ public class Order extends BaseEntity {
     private User user;
     private List<OrderItem> orderItems;
     private Shipment shipment;
+
+    @Override
+    public String toString() {
+        return "Order{" +
+
+                "userId=" + userId +
+                ", totalAmount=" + totalAmount +
+                ", status=" + status +
+                '}';
+    }
 }

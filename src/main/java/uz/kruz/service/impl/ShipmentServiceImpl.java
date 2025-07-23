@@ -2,6 +2,7 @@ package uz.kruz.service.impl;
 
 import uz.kruz.domain.Shipment;
 import uz.kruz.dto.ShipmentDTO;
+import uz.kruz.repository.OrderRepository;
 import uz.kruz.repository.ShipmentRepository;
 import uz.kruz.service.ShipmentService;
 import uz.kruz.util.Validator;
@@ -17,9 +18,11 @@ import java.util.Optional;
 public class ShipmentServiceImpl implements ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
+    private final OrderRepository orderRepository;
 
-    public ShipmentServiceImpl(ShipmentRepository shipmentRepository) {
+    public ShipmentServiceImpl(ShipmentRepository shipmentRepository, OrderRepository orderRepository) {
         this.shipmentRepository = shipmentRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class ShipmentServiceImpl implements ShipmentService {
         if (dto == null) {
             throw new ServiceException("ShipmentDTO is required");
         }
-        Validator.validateInteger(dto.getOrderId(),  "orderId");
+        Validator.validateInteger(dto.getOrderId(), "orderId");
         Validator.validateString(dto.getTrackingNo(), "trackingNo");
         if (dto.getShippedAt() == null) {
             throw new ServiceException("ShipmentDTO is required");
@@ -55,7 +58,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public Optional<Shipment> findById(Integer id) {
         Validator.validateInteger(id, "id");
-        return  shipmentRepository.retrieveById(id);
+        return shipmentRepository.retrieveById(id);
     }
 
     @Override
@@ -78,6 +81,9 @@ public class ShipmentServiceImpl implements ShipmentService {
         boolean modified = false;
         if (dto.getOrderId() != null) {
             Validator.validateInteger(dto.getOrderId(), "orderId");
+            if (!orderRepository.existsById(dto.getOrderId())) {
+                throw new EntityNotFoundException("Order with id " + dto.getOrderId() + " not found");
+            }
             existingShipment.setOrderId(dto.getOrderId());
             modified = true;
         }

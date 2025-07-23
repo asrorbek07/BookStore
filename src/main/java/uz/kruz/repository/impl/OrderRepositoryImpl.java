@@ -23,7 +23,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     private static final String SELECT_BY_ID = "SELECT * FROM orders WHERE id = ?";
     private static final String SELECT_ALL = "SELECT * FROM orders";
     private static final String DELETE_BY_ID = "DELETE FROM orders WHERE id = ?";
-    private static final String UPDATE = "UPDATE orders SET user_id = ?, total_amount = ?, status = ? WHERE id = ?";
+    private static final String UPDATE = "UPDATE orders SET total_amount = ?, status = ? WHERE id = ?";
     private static final String COUNT = "SELECT COUNT(*) FROM orders";
     private static final String SELECT_BY_USER_ID = "SELECT * FROM orders WHERE user_id = ?";
     private static final String SELECT_BY_STATUS = "SELECT * FROM orders WHERE status = ?";
@@ -120,9 +120,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Order update(Order entity) {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
-            ps.setInt(1, entity.getUserId());
-            ps.setBigDecimal(2, entity.getTotalAmount());
-            ps.setString(3, entity.getStatus().name());
+            ps.setBigDecimal(1, entity.getTotalAmount());
+            ps.setString(2, entity.getStatus().name());
+            ps.setInt(3, entity.getUserId());
             int updated = ps.executeUpdate();
             if (updated == 0) {
                 throw new RowNotFoundException("Order not found for update: " + entity.getId());
