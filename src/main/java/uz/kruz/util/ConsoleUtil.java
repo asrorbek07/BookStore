@@ -29,15 +29,27 @@ public class ConsoleUtil {
 	}
 
 	public BigDecimal getValueOfBigDecimal(String label){
-		narrator.say(label + ": ");
-		String inputStr = scanner.nextLine();
-		inputStr = inputStr.trim();
-		return new BigDecimal(inputStr);
+		while (true){
+			narrator.say(label + ": ");
+			String inputStr = scanner.nextLine();
+			inputStr = inputStr.trim();
+			try {
+				return new BigDecimal(inputStr);
+			} catch (NumberFormatException e) {
+				narrator.say("Invalid input. Please enter a valid decimal number.");
+			}
+		}
 	}
 	public Integer getValueOfInteger(String label){
-		narrator.say(label + ": ");
-		String inputStr = scanner.nextLine();
-		inputStr = inputStr.trim();
-		return Integer.parseInt(inputStr);
+		while (true){
+			narrator.say(label + ": ");
+			String inputStr = scanner.nextLine();
+			inputStr = inputStr.trim();
+			try {
+				return Integer.parseInt(inputStr);
+			} catch (NumberFormatException e) {
+				narrator.say("Invalid input. Please enter a valid integer.");
+			}
+		}
 	}
 }

@@ -9,16 +9,17 @@ import uz.kruz.service.impl.CategoryServiceImpl;
 import uz.kruz.util.ConsoleUtil;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
+import uz.kruz.util.Validator;
 import uz.kruz.util.exceptions.EntityNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.util.exceptions.ServiceException;
 
 public class CategoryConsole {
     //
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
-    private ConsoleUtil consoleUtil;
-    private Narrator narrator;
+    private final ConsoleUtil consoleUtil;
+    private final Narrator narrator;
 
     public CategoryConsole() {
         //
@@ -30,13 +31,11 @@ public class CategoryConsole {
     public void showAll() {
         //
         try {
-            //
             narrator.sayln("\n\t > All categories: ");
             for (Category category : categoryService.findAll()) {
                 narrator.sayln("\t > " + category.toString());
             }
         } catch (ServiceException | RepositoryException e) {
-            //
             narrator.sayln(e.getMessage());
         }
     }
@@ -51,11 +50,10 @@ public class CategoryConsole {
             }
 
             try {
-                //
+                Validator.validateString(categoryName, "Name");
                 CategoryDTO categoryDTO = CategoryDTO.builder()
                         .name(categoryName)
                         .build();
-
                 categoryService.register(categoryDTO);
                 narrator.say("\n Registered category: " + categoryDTO.toString());
             } catch (IllegalArgumentException | ServiceException | RepositoryException e) {
@@ -87,7 +85,7 @@ public class CategoryConsole {
         return categoryFound;
     }
 
-    public Category findOne() {
+    private Category findOne() {
         //
         Category categoryFound = null;
         while (true) {
@@ -119,10 +117,9 @@ public class CategoryConsole {
         if (newName.equals("0")) {
             return;
         }
-        targetCategory.setName(newName);
 
         CategoryDTO categoryDTO = CategoryDTO.builder()
-                .name(targetCategory.getName())
+                .name(newName)
                 .build();
         try {
             categoryService.modify(categoryDTO, targetCategory.getId());

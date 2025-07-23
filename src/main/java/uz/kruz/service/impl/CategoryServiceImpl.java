@@ -4,8 +4,8 @@ import uz.kruz.domain.Category;
 import uz.kruz.dto.CategoryDTO;
 import uz.kruz.repository.CategoryRepository;
 import uz.kruz.service.CategoryService;
-import uz.kruz.util.StringUtil;
 import uz.kruz.util.Validator;
+import uz.kruz.util.exceptions.DuplicateEntityException;
 import uz.kruz.util.exceptions.EntityNotFoundException;
 import uz.kruz.util.exceptions.ServiceException;
 
@@ -25,11 +25,12 @@ public class CategoryServiceImpl implements CategoryService {
         if (dto == null) {
             throw new ServiceException("CategoryDTO must not be null");
         }
-        if (dto.getName()!=null){
-            Validator.validateString(dto.getName(), "Name");
-        }
-        Category category=Category.builder().name(dto.getName()).build();
-       return categoryRepository.create(category);
+        Validator.validateString(dto.getName(), "Name");
+        categoryRepository.retrieveByName(dto.getName()).ifPresent(category -> {
+            throw new DuplicateEntityException(String.format("Category with name '%s' already exists", dto.getName()));
+        });
+        Category category = Category.builder().name(dto.getName()).build();
+        return categoryRepository.create(category);
     }
 
 
@@ -57,12 +58,12 @@ public class CategoryServiceImpl implements CategoryService {
     public Category modify(CategoryDTO dto, Integer id) {
         Validator.validateId(id);
 
-        Category category=categoryRepository.retrieveById(id)
+        Category category = categoryRepository.retrieveById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Category with ID '%d' not found", id)));
         boolean modified = false;
 
 
-        if (dto.getName()!=null){
+        if (dto.getName() != null) {
             Validator.validateString(dto.getName(), "name");
             category.setName(dto.getName());
             modified = true;
@@ -88,7 +89,7 @@ public class CategoryServiceImpl implements CategoryService {
         Validator.validateString(name, "Name");
 
         return categoryRepository.retrieveByName(name)
-                                .orElseThrow(()-> new EntityNotFoundException(String.format("Category with name '%s' not found", name)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Category with name '%s' not found", name)));
 
     }
 
