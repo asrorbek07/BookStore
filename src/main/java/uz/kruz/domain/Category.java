@@ -1,6 +1,8 @@
 package uz.kruz.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import uz.kruz.domain.vo.BaseEntity;
 
@@ -8,7 +10,16 @@ import uz.kruz.domain.vo.BaseEntity;
 @Getter
 @Setter
 @SuperBuilder
-@ToString(callSuper = true)
 public class Category extends BaseEntity {
     private String name;
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + getId() +
+                "name='" + name + '\'' +
+                "createdAt=" + getCreatedAt() +
+                "updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 }

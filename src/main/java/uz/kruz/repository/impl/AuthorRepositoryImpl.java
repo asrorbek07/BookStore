@@ -171,6 +171,8 @@ public class AuthorRepositoryImpl implements AuthorRepository {
         return Author.builder()
                 .id(rs.getInt("id"))
                 .fullName(rs.getString("full_name"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
     }
 }

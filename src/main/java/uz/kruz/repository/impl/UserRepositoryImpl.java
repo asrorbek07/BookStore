@@ -192,6 +192,8 @@ public class UserRepositoryImpl implements UserRepository {
                 .password(rs.getString("password"))
                 .phone(rs.getString("phone"))
                 .role(UserRole.valueOf(rs.getString("role")))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
     }
 }

@@ -183,6 +183,8 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
                 .id(rs.getInt("id"))
                 .bookId(rs.getInt("book_id"))
                 .authorId(rs.getInt("author_id"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
     }
 

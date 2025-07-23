@@ -171,6 +171,8 @@ public class PublisherRepositoryImpl implements PublisherRepository {
                 .name(rs.getString("name"))
                 .contactEmail(rs.getString("contact_email"))
                 .phone(rs.getString("phone"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
     }
 }

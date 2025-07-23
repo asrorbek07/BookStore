@@ -251,6 +251,8 @@ public class BookRepositoryImpl implements BookRepository {
                 .price(rs.getBigDecimal("price"))
                 .stock(rs.getInt("stock"))
                 .publishedYear(rs.getInt("published_year"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
     }
 }

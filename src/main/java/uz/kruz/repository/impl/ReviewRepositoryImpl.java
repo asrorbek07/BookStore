@@ -197,6 +197,8 @@ public class ReviewRepositoryImpl implements ReviewRepository {
                 .bookId(rs.getInt("book_id"))
                 .rating(rs.getInt("rating"))
                 .comment(rs.getString("comment"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
     }
 

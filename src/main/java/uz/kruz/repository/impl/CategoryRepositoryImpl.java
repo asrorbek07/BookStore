@@ -146,6 +146,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         return Category.builder()
                 .id(rs.getInt("id"))
                 .name(rs.getString("name"))
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
     }
 

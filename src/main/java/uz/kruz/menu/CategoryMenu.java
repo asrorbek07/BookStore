@@ -31,19 +31,16 @@ public class CategoryMenu {
             switch (inputNumber) {
                 //
                 case 1:
-                    categoryConsole.register();
+                    categoryConsole.showAll();
                     break;
                 case 2:
-                    categoryConsole.modify();
+                    categoryConsole.register();
                     break;
                 case 3:
-                    narrator.sayln("Read categories");
+                    categoryConsole.modify();
                     break;
                 case 4:
                     categoryConsole.remove();
-                    break;
-                case 5:
-                    narrator.sayln("For viewing all categories");
                     break;
                 case 0:
                     this.exitProgram();
@@ -60,11 +57,10 @@ public class CategoryMenu {
         narrator.sayln("..............................");
         narrator.sayln(" Category menu ");
         narrator.sayln("..............................");
-        narrator.sayln(" 1. Create category");
-        narrator.sayln(" 2. Edit category");
-        narrator.sayln(" 3. Read category");
+        narrator.sayln(" 1. View all categories");
+        narrator.sayln(" 2. Create category");
+        narrator.sayln(" 3. Edit category");
         narrator.sayln(" 4. Delete category");
-        narrator.sayln(" 5. View all categories");
         narrator.sayln("..............................");
         narrator.sayln(" 0. Exit program");
         narrator.sayln("..............................");
@@ -75,7 +71,7 @@ public class CategoryMenu {
         narrator.say("Select: ");
         int menuNumber = scanner.nextInt();
 
-        if (menuNumber >= 0 && menuNumber <= 5) {
+        if (menuNumber >= 0 && menuNumber <= 4) {
             scanner.nextLine();
             return menuNumber;
         } else {

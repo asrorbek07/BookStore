@@ -27,6 +27,20 @@ public class CategoryConsole {
         this.consoleUtil = new ConsoleUtil(narrator);
     }
 
+    public void showAll() {
+        //
+        try {
+            //
+            narrator.sayln("\n\t > All categories: ");
+            for (Category category : categoryService.findAll()) {
+                narrator.sayln("\t > " + category.toString());
+            }
+        } catch (ServiceException | RepositoryException e) {
+            //
+            narrator.sayln(e.getMessage());
+        }
+    }
+
     public void register() {
         //
         while (true) {

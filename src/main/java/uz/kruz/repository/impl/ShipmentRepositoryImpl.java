@@ -206,6 +206,8 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
                 .trackingNumber(rs.getString("tracking_number"))
                 .shippedAt(rs.getTimestamp("shipped_at").toLocalDateTime())
                 .deliveryEstimate(rs.getDate("delivery_estimate").toLocalDate())
+                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .updatedAt(rs.getTimestamp("updated_at").toLocalDateTime())
                 .build();
     }
 
