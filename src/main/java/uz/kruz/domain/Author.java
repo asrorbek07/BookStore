@@ -1,6 +1,8 @@
 package uz.kruz.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import uz.kruz.domain.vo.BaseEntity;
 
@@ -14,4 +16,14 @@ public class Author extends BaseEntity {
     private String fullName;
 
     private List<Book> books;
+
+    @Override
+    public String toString() {
+        return "Author{" +
+                "id=" + getId() +
+                ", fullName='" + fullName + '\'' +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 }

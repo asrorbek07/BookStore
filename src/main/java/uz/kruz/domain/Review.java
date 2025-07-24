@@ -1,6 +1,8 @@
 package uz.kruz.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import uz.kruz.domain.vo.BaseEntity;
 
@@ -15,11 +17,23 @@ public class Review extends BaseEntity {
     private Integer bookId;
     private Integer rating;  // Between 1 and 5
     private String comment;
-    private LocalDateTime reviewedAt; // Maps to createdAt in BaseEntity
+    private LocalDateTime reviewedAt;
 
-    // Relationships (not stored in database directly)
     private User user;
     private Book book;
 
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + getId() +
+                ", userId=" + userId +
+                ", bookId=" + bookId +
+                ", rating=" + rating +
+                ", comment='" + comment + '\'' +
+                ", reviewedAt=" + reviewedAt +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 
 }
