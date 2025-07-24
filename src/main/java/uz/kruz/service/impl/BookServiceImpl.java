@@ -25,10 +25,6 @@ public class BookServiceImpl implements BookService {
         this.authorRepository = authorRepository;
     }
 
-    public BookServiceImpl(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
-
     @Override
     public Book register(BookDTO dto) {
         if (dto == null) {

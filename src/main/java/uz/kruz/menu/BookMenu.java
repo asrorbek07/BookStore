@@ -18,6 +18,7 @@ public class BookMenu {
         //
         this.scanner = new Scanner(System.in);
         this.narrator = new Narrator(this, TalkingAt.Left);
+        this.bookConsole = new BookConsole();
     }
 
     public void show() {
@@ -30,10 +31,10 @@ public class BookMenu {
 
             switch (inputNumber) {
                 case 1:
-                    bookConsole.register();
+                    bookConsole.showAll();
                     break;
                 case 2:
-                    narrator.sayln("New Book updated");
+                    bookConsole.register();
                     break;
                 case 3:
                     narrator.sayln("New Book deleted");
@@ -56,12 +57,12 @@ public class BookMenu {
         //
         narrator.sayln("");
         narrator.sayln("..............................");
-        narrator.sayln(" Main menu ");
+        narrator.sayln(" Book menu ");
         narrator.sayln("..............................");
-        narrator.sayln(" 1. Add Book");
-        narrator.sayln(" 2. Edit Book");
-        narrator.sayln(" 3. Delete Book");
-        narrator.sayln(" 4. List Books");
+        narrator.sayln(" 1. View all books");
+        narrator.sayln(" 2. Create book");
+        narrator.sayln(" 3. Edit book");
+        narrator.sayln(" 4. Delete book");
         narrator.sayln(" 5. Find books by author id");
         narrator.sayln("..............................");
         narrator.sayln(" 0. Exit program");

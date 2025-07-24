@@ -1,8 +1,17 @@
 package uz.kruz.console;
 
+import uz.kruz.domain.Author;
 import uz.kruz.domain.Book;
+import uz.kruz.domain.Category;
+import uz.kruz.domain.Publisher;
 import uz.kruz.dto.BookDTO;
+import uz.kruz.repository.AuthorRepository;
+import uz.kruz.repository.CategoryRepository;
+import uz.kruz.repository.PublisherRepository;
+import uz.kruz.repository.impl.AuthorRepositoryImpl;
 import uz.kruz.repository.impl.BookRepositoryImpl;
+import uz.kruz.repository.impl.CategoryRepositoryImpl;
+import uz.kruz.repository.impl.PublisherRepositoryImpl;
 import uz.kruz.service.BookService;
 import uz.kruz.service.impl.BookServiceImpl;
 import uz.kruz.util.ConsoleUtil;
@@ -18,11 +27,26 @@ public class BookConsole {
     private BookService bookService;
     private final ConsoleUtil consoleUtil;
     private Narrator narrator;
+    private AuthorRepository authorRepository;
+    private CategoryRepository categoryRepository;
+    private PublisherRepository publisherRepository;
 
     public BookConsole() {
-        this.bookService = new BookServiceImpl(new BookRepositoryImpl());
+        this.bookService = new BookServiceImpl(new BookRepositoryImpl(), new CategoryRepositoryImpl(), new PublisherRepositoryImpl(), new AuthorRepositoryImpl());
         this.narrator = new Narrator(this, TalkingAt.Left);
         this.consoleUtil = new ConsoleUtil(narrator);
+    }
+
+    public void showAll() {
+        //
+        try {
+            narrator.sayln(String.format("\n\t > All Books (%d): ", bookService.count()));
+            for (Book book : bookService.findAll()) {
+                narrator.sayln("\t > " + book.toString());
+            }
+        } catch (ServiceException | RepositoryException e) {
+            narrator.sayln(e.getMessage());
+        }
     }
 
     public void register() {
@@ -47,14 +71,46 @@ public class BookConsole {
             if (publisherYear.equals(0)) {
                 return;
             }
+            //
+            try {
+                categoryRepository = new CategoryRepositoryImpl();
+                for (Category category : categoryRepository.retrieveAll()) {
+                    narrator.sayln("\t > " + category.toString());
+                }
+            } catch (RepositoryException e) {
+                narrator.sayln(e.getMessage());
+            }
             Integer categoryId = consoleUtil.getValueOfInteger("\nEnter the category id");
             if (categoryId.equals(0)) {
                 return;
+            }
+            //
+            try {
+                publisherRepository = new PublisherRepositoryImpl();
+                for (Publisher publisher : publisherRepository.retrieveAll()) {
+                    narrator.sayln("\t > " + publisher.toString());
+                }
+            } catch (RepositoryException e) {
+                narrator.sayln(e.getMessage());
             }
             Integer publisherId = consoleUtil.getValueOfInteger("\nEnter the publisher id");
             if (publisherId.equals(0)) {
                 return;
             }
+            //
+            try {
+                authorRepository = new AuthorRepositoryImpl();
+                for (Author author : authorRepository.retrieveAll()) {
+                    narrator.sayln("\t > " + author.toString());
+                }
+            } catch (RepositoryException e) {
+                narrator.sayln(e.getMessage());
+            }
+            Integer authorId = consoleUtil.getValueOfInteger("\nEnter the author id");
+            if (authorId.equals(0)) {
+                return;
+            }
+
 
             try {
                 BookDTO bookDTO = BookDTO.builder()
@@ -65,6 +121,7 @@ public class BookConsole {
                         .publishedYear(publisherYear)
                         .categoryId(categoryId)
                         .publisherId(publisherId)
+
                         .build();
                 bookService.register(bookDTO);
                 narrator.say("\nBook registered successfully: " + bookDTO.toString());
@@ -164,10 +221,11 @@ public class BookConsole {
             narrator.sayln(e.getMessage());
         }
     }
+
     public void remove() {
         Book targetBook = findOne();
         if (targetBook == null) {
-                return;
+            return;
         }
 
     }
