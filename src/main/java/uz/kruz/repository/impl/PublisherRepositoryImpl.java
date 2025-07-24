@@ -19,7 +19,7 @@ public class PublisherRepositoryImpl implements PublisherRepository {
     private static final String DELETE_BY_ID = "DELETE FROM publishers WHERE id = ?";
     private static final String UPDATE = "UPDATE publishers SET name = ?, contact_email = ?, phone = ? WHERE id = ?";
     private static final String COUNT = "SELECT COUNT(*) FROM publishers";
-    private static final String SELECT_BY_NAME = "SELECT * FROM publishers WHERE name LIKE ?";
+    private static final String SELECT_BY_NAME = "SELECT * FROM publishers WHERE name = ?";
     private static final String EXISTS_BY_CONTACT_EMAIL = "SELECT EXISTS(SELECT 1 FROM publishers WHERE contact_email = ?)";
     private static final String EXISTS_BY_PHONE = "SELECT EXISTS(SELECT 1 FROM publishers WHERE phone = ?)";
     private static final String SELECT_BY_EMAIL = "SELECT * FROM publishers WHERE contact_email = ?";
@@ -48,7 +48,8 @@ public class PublisherRepositoryImpl implements PublisherRepository {
         } catch (SQLException e) {
             throw new RepositoryException("Error inserting publisher", e);
         }
-        return entity;
+        return retrieveById(entity.getId()).orElseThrow(() ->
+                new RepositoryException("Failed to retrieve publisher after insertion"));
     }
 
     @Override
@@ -99,6 +100,7 @@ public class PublisherRepositoryImpl implements PublisherRepository {
             ps.setString(1, entity.getName());
             ps.setString(2, entity.getContactEmail());
             ps.setString(3, entity.getPhone());
+            ps.setInt(4, entity.getId());
             int updated = ps.executeUpdate();
             if (updated == 0) {
                 throw new RowNotFoundException("Publisher not found for ID: " + entity.getId());
@@ -136,7 +138,7 @@ public class PublisherRepositoryImpl implements PublisherRepository {
     @Override
     public Optional<Publisher> retrieveByName(String name) {
         try (PreparedStatement ps = connection.prepareStatement(SELECT_BY_NAME)) {
-            ps.setString(1, "%" + name + "%");
+            ps.setString(1, name );
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return Optional.of(mapRow(rs));
