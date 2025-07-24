@@ -1,6 +1,7 @@
 package uz.kruz.menu;
 
 
+import uz.kruz.console.ShipmentConsole;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
 
@@ -8,7 +9,7 @@ import java.util.Scanner;
 
 public class ShipmentMenu {
     //
-
+    private ShipmentConsole shipmentConsole;
     private Scanner scanner;
     private Narrator narrator;
 
@@ -16,6 +17,7 @@ public class ShipmentMenu {
         //
         this.scanner = new Scanner(System.in);
         this.narrator = new Narrator(this, TalkingAt.Left);
+        this.shipmentConsole = new ShipmentConsole();
     }
 
     public void show() {
@@ -28,10 +30,10 @@ public class ShipmentMenu {
 
             switch (inputNumber) {
                 case 1:
-                    narrator.sayln("Added shipment");
+                    shipmentConsole.showAll();
                     break;
                 case 2:
-                    narrator.sayln("Deleted shipment");
+                    shipmentConsole.register();
                     break;
                 case 3:
                     narrator.sayln("Updated shipment");
@@ -61,8 +63,8 @@ public class ShipmentMenu {
         narrator.sayln("..............................");
         narrator.sayln(" Shipment menu ");
         narrator.sayln("..............................");
-        narrator.sayln("1. Create shipment");
-        narrator.sayln("2. Delete shipment");
+        narrator.sayln("1. View All shipments");
+        narrator.sayln("2. Create shipment");
         narrator.sayln("3. Update shipment");
         narrator.sayln("4. View shipments");
         narrator.sayln("5. Search shipment");
