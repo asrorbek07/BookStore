@@ -3,6 +3,7 @@ package uz.kruz.service.impl;
 import uz.kruz.domain.Publisher;
 import uz.kruz.dto.PublisherDTO;
 import uz.kruz.repository.PublisherRepository;
+import uz.kruz.repository.impl.PublisherRepositoryImpl;
 import uz.kruz.service.PublisherService;
 import uz.kruz.util.Validator;
 import uz.kruz.util.exceptions.DuplicateEntityException;
@@ -16,8 +17,8 @@ public class PublisherServiceImpl implements PublisherService {
 
     private PublisherRepository publisherRepository = null;
 
-    public PublisherServiceImpl() {
-        this.publisherRepository = publisherRepository;
+    public PublisherServiceImpl(PublisherRepositoryImpl publisherRepository) {
+        this.publisherRepository = this.publisherRepository;
     }
 
     @Override
