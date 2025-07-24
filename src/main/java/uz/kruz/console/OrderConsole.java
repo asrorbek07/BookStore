@@ -1,10 +1,18 @@
 package uz.kruz.console;
 
 import uz.kruz.domain.Order;
+import uz.kruz.domain.OrderItem;
 import uz.kruz.domain.vo.OrderStatus;
 import uz.kruz.dto.OrderDTO;
+import uz.kruz.dto.OrderItemDTO;
+import uz.kruz.repository.impl.BookRepositoryImpl;
+import uz.kruz.repository.impl.OrderItemRepositoryImpl;
 import uz.kruz.repository.impl.OrderRepositoryImpl;
+import uz.kruz.service.BookService;
+import uz.kruz.service.OrderItemService;
 import uz.kruz.service.OrderService;
+import uz.kruz.service.impl.BookServiceImpl;
+import uz.kruz.service.impl.OrderItemServiceImpl;
 import uz.kruz.service.impl.OrderServiceImpl;
 import uz.kruz.util.ConsoleUtil;
 import uz.kruz.util.Narrator;
@@ -23,10 +31,14 @@ public class OrderConsole {
     private final OrderService orderService;
     private final ConsoleUtil consoleUtil;
     private final Narrator narrator;
+    private final OrderItemService orderItemService;
+    private final BookService bookService;
 
     public OrderConsole() {
         //
         this.orderService = new OrderServiceImpl(new OrderRepositoryImpl());
+        this.orderItemService = new OrderItemServiceImpl(new OrderItemRepositoryImpl(), new BookRepositoryImpl());
+        this.bookService = new BookServiceImpl(new BookRepositoryImpl());
         this.narrator = new Narrator(this, TalkingAt.Left);
         this.consoleUtil = new ConsoleUtil(narrator);
     }
@@ -50,10 +62,36 @@ public class OrderConsole {
             if (userId == 0) {
                 return;
             }
-            BigDecimal total_amount = consoleUtil.getValueOfBigDecimal("\nEnter the total amount: ");
-            if (total_amount.equals(BigDecimal.ZERO)) {
-                return;
+            List<OrderItem> items = new ArrayList<>();
+            BigDecimal total_amount = BigDecimal.ZERO;
+            narrator.sayln("Add items to the order: ");
+            while (true) {
+                Integer bookId = consoleUtil.getValueOfInteger("Please enter the book id(0. return): ");
+                if (bookId == 0) {break;}
+
+                int quantity = consoleUtil.getValueOfInteger("Please enter the quantity: ");
+                if (quantity <= 0) {
+                    narrator.sayln("Quantity must be greater than 0.");
+                    continue;
+                }
+                try {
+                    BigDecimal price = bookService.getPriceById(bookId);
+                    BigDecimal subTotal = price.multiply(new BigDecimal(quantity));
+                    total_amount = total_amount.add(subTotal);
+
+                    OrderItem item = OrderItem.builder()
+                            .orderId(null)
+                            .bookId(bookId)
+                            .quantity(quantity)
+                            .price(subTotal)
+                            .build();
+
+                    items.add(item);
+                } catch (ServiceException e) {
+                    narrator.sayln(e.getMessage());
+                }
             }
+
             narrator.sayln("\nChoose order status: ");
             narrator.sayln("  1. PENDING");
             narrator.sayln("  2. CONFIRMED");
@@ -88,7 +126,19 @@ public class OrderConsole {
                         .totalAmount(total_amount)
                         .status(status)
                         .build();
-                orderService.register(orderDTO);
+                Order registeredOrder = orderService.register(orderDTO);
+                for (OrderItem item : items) {
+                    item.setOrderId(registeredOrder.getId());
+
+                    OrderItemDTO dto = OrderItemDTO.builder()
+                            .orderId(item.getOrderId())
+                            .bookId(item.getBookId())
+                            .quantity(item.getQuantity())
+                            .price(item.getPrice())
+                            .build();
+
+                    orderItemService.register(dto);
+                }
                 narrator.say("\n Registered Order: " + orderDTO.toString());
             } catch (ServiceException | RepositoryException | IllegalArgumentException e) {
                 narrator.sayln(e.getMessage());
@@ -99,7 +149,7 @@ public class OrderConsole {
         Order orderFound = null;
         while (true) {
             //
-            Integer id = consoleUtil.getValueOfInteger("\n user id to find(0. Order menu): ");
+            Integer id = consoleUtil.getValueOfInteger("\n order id to find(0. Order menu): ");
             if (id == 0) {
                 break;
             }

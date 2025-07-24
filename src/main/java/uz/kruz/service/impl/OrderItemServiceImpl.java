@@ -32,13 +32,13 @@ public class OrderItemServiceImpl implements OrderItemService {
         Validator.validateInteger(dto.getOrderId(), "OrderID");
         Validator.validateInteger(dto.getBookId(), "BookID");
         Validator.validateInteger(dto.getQuantity(), "Quantity");
-        Validator.validateBigDecimal(BigDecimal.valueOf(dto.getPrice()), "Price");
+        Validator.validateBigDecimal(dto.getPrice(), "Price");
 
         OrderItem orderItem = OrderItem.builder()
                 .orderId(dto.getOrderId())
                 .bookId(dto.getBookId())
                 .quantity(dto.getQuantity())
-                .price(BigDecimal.valueOf(dto.getPrice())).build();
+                .price(dto.getPrice()).build();
         return orderItemRepository.create(orderItem);
     }
 
@@ -82,8 +82,8 @@ public class OrderItemServiceImpl implements OrderItemService {
             modified = true;
         }
         if (dto.getPrice()!=null) {
-            Validator.validateBigDecimal(BigDecimal.valueOf(dto.getPrice()), "Price");
-            existing.setPrice(BigDecimal.valueOf(dto.getPrice()));
+            Validator.validateBigDecimal(dto.getPrice(), "Price");
+            existing.setPrice(dto.getPrice());
             modified = true;
         }
         if (!modified) {
