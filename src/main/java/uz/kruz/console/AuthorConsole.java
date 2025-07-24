@@ -1,23 +1,14 @@
 package uz.kruz.console;
 
 import uz.kruz.domain.Author;
-import uz.kruz.domain.Book;
 import uz.kruz.dto.AuthorDTO;
-import uz.kruz.dto.BookDTO;
 import uz.kruz.repository.impl.AuthorRepositoryImpl;
 import uz.kruz.repository.impl.BookRepositoryImpl;
 import uz.kruz.service.AuthorService;
-import uz.kruz.service.BookService;
 import uz.kruz.service.impl.AuthorServiceImpl;
-import uz.kruz.service.impl.BookServiceImpl;
 import uz.kruz.util.*;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.util.exceptions.ServiceException;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 
 public class AuthorConsole {
     private AuthorService authorService;
@@ -97,7 +88,7 @@ public class AuthorConsole {
         }
         return authorFound;
     }
-    public void modify(Author author){
+    public void modify(){
         //
         Author targetAuthor = findOne();
         if (targetAuthor == null){

@@ -94,13 +94,19 @@ public class CategoryConsole {
         if (newName.equals("0")) {
             return;
         }
-
+        if (newName.isBlank()){
+            newName=null;
+        }
+        if (newName == null){
+            narrator.sayln("No change made to the category");
+            return;
+        }
         CategoryDTO categoryDTO = CategoryDTO.builder()
                 .name(newName)
                 .build();
         try {
-            categoryService.modify(categoryDTO, targetCategory.getId());
-            narrator.sayln("\t > Modified category: " + targetCategory);
+            Category modifiedCategory = categoryService.modify(categoryDTO, targetCategory.getId());
+            narrator.sayln("\t > Modified category: " + modifiedCategory);
         } catch (ServiceException | RepositoryException e) {
             narrator.sayln(e.getMessage());
         }
