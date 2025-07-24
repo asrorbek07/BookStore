@@ -48,7 +48,8 @@ public class PublisherRepositoryImpl implements PublisherRepository {
         } catch (SQLException e) {
             throw new RepositoryException("Error inserting publisher", e);
         }
-        return entity;
+        return retrieveById(entity.getId()).orElseThrow(() ->
+                new RepositoryException("Failed to retrieve publisher after insertion"));
     }
 
     @Override

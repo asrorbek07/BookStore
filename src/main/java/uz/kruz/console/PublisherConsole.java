@@ -12,8 +12,6 @@ import uz.kruz.util.Validator;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.util.exceptions.ServiceException;
 
-import java.util.Optional;
-
 public class PublisherConsole {
     private PublisherService publisherService;
     private ConsoleUtil consoleUtil;
@@ -23,6 +21,17 @@ public class PublisherConsole {
         this.publisherService = new PublisherServiceImpl(new PublisherRepositoryImpl());
         this.narrator = new Narrator(this, TalkingAt.Left);
         this.consoleUtil = new ConsoleUtil(narrator);
+    }
+
+    public void showAll() {
+        try {
+            narrator.sayln(String.format("\n\t > All Publishers (%d): ", publisherService.count()));
+            for (Publisher publisher : publisherService.findAll()) {
+                narrator.sayln("\t > " + publisher.toString());
+            }
+        } catch (ServiceException | RepositoryException e) {
+            narrator.sayln(e.getMessage());
+        }
     }
 
     public void register() {
@@ -60,28 +69,6 @@ public class PublisherConsole {
         }
     }
 
-    public Optional<Publisher> find() {
-        Optional<Publisher> publisherFound = Optional.empty();
-
-        while (true) {
-            String publisherName = consoleUtil.getValueOf("\n Publisher name (0. publisher menu): ");
-            if (publisherName.equals("0")) break;
-
-            try {
-                publisherFound = publisherService.findByName(publisherName);
-                if (publisherFound.isPresent()) {
-                    narrator.sayln("\t > Found publisher: " + publisherFound.get());
-                } else {
-                    narrator.sayln("\t > Publisher not found.");
-                }
-            } catch (ServiceException | RepositoryException e) {
-                narrator.sayln(e.getMessage());
-            }
-        }
-
-        return publisherFound;
-    }
-
     public Publisher findOne() {
         Publisher publisherFound = null;
 
@@ -90,13 +77,9 @@ public class PublisherConsole {
             if (publisherName.equals("0")) break;
 
             try {
-                publisherFound = publisherService.findByName(publisherName).orElse(null);
-                if (publisherFound != null) {
-                    narrator.sayln("\t > Found publisher: " + publisherFound);
-                    break;
-                } else {
-                    narrator.sayln("\t > Publisher not found.");
-                }
+                publisherFound = publisherService.findByName(publisherName);
+                narrator.sayln("\t > Found publisher: " + publisherFound);
+                break;
             } catch (ServiceException | RepositoryException e) {
                 narrator.sayln(e.getMessage());
             }
@@ -144,14 +127,4 @@ public class PublisherConsole {
         }
     }
 
-    public void showAll() {
-        try {
-            narrator.sayln(String.format("\n\t > All Publishers (%d): ", publisherService.count()));
-            for (Publisher publisher : publisherService.findAll()) {
-                narrator.sayln("\t > " + publisher.toString());
-            }
-        } catch (ServiceException | RepositoryException e) {
-            narrator.sayln(e.getMessage());
-        }
-    }
 }
