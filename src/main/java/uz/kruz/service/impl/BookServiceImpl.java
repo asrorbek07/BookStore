@@ -8,6 +8,7 @@ import uz.kruz.util.Validator;
 import uz.kruz.util.exceptions.EntityNotFoundException;
 import uz.kruz.util.exceptions.ServiceException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -181,4 +182,11 @@ public class BookServiceImpl implements BookService {
     public List<Book> findByStockLessThan(Integer amount) {
         Validator.validateInteger(amount, "Stock");
         return bookRepository.retrieveByStockLessThan(amount);    }
+
+    @Override
+    public BigDecimal getPriceById(Integer bookId) {
+        return bookRepository.retrieveById(bookId)
+                .map(book -> book.getPrice())
+                .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " + bookId));
+    }
 }

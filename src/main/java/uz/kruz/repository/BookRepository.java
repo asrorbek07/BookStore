@@ -19,4 +19,5 @@ public interface BookRepository extends Repository<Book, Integer> {
 
     List<Book> retrieveByStockLessThan(Integer amount);
     Boolean existsByIsbn(String isbn);
+    Optional<Book> retrieveById(Integer id);
 }
