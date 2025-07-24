@@ -28,7 +28,7 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceException("OrderDTO must not be null");
         }
         Validator.validateInteger(dto.getUserId(),  "userId");
-        Validator.validateBigDecimal(BigDecimal.valueOf(dto.getTotalAmount()), "totalAmount");
+        Validator.validateBigDecimal(dto.getTotalAmount(), "totalAmount");
         if (dto.getStatus() == null) {
             throw new IllegalArgumentException("Status is required");
         }
@@ -36,12 +36,12 @@ public class OrderServiceImpl implements OrderService {
             Validator.validateInteger(dto.getUserId(), "userId");
         }
         if (dto.getTotalAmount() != null){
-            Validator.validateBigDecimal(BigDecimal.valueOf(dto.getTotalAmount()), "totalAmount");
+            Validator.validateBigDecimal(dto.getTotalAmount(), "totalAmount");
         }
 
         Order order = Order.builder()
                 .userId(dto.getUserId())
-                .totalAmount(BigDecimal.valueOf(dto.getTotalAmount()))
+                .totalAmount(dto.getTotalAmount())
                 .status(dto.getStatus()).build();
         return orderRepository.create(order);
 
@@ -71,14 +71,14 @@ public class OrderServiceImpl implements OrderService {
         Order existing = orderRepository.retrieveById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Order with id " + id + " does not exist"));
         boolean modified = false;
-        if (dto.getUserId() != null) {
-            Validator.validateInteger(dto.getUserId(), "userId");
-            existing.setUserId(dto.getUserId());
-            modified = true;
-        }
+//        if (dto.getUserId() != null) {
+//            Validator.validateInteger(dto.getUserId(), "userId");
+//            existing.setUserId(dto.getUserId());
+//            modified = true;
+//        }
         if (dto.getTotalAmount() != null) {
-            Validator.validateBigDecimal(BigDecimal.valueOf(dto.getTotalAmount()), "totalAmount");
-            existing.setTotalAmount(BigDecimal.valueOf(dto.getTotalAmount()));
+            Validator.validateBigDecimal(dto.getTotalAmount(), "totalAmount");
+            existing.setTotalAmount(dto.getTotalAmount());
             modified = true;
         }
         if (dto.getStatus() != null) {

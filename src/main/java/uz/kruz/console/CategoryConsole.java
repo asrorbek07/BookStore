@@ -10,7 +10,6 @@ import uz.kruz.util.ConsoleUtil;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
 import uz.kruz.util.Validator;
-import uz.kruz.util.exceptions.EntityNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.util.exceptions.ServiceException;
 
@@ -31,7 +30,7 @@ public class CategoryConsole {
     public void showAll() {
         //
         try {
-            narrator.sayln("\n\t > All categories: ");
+            narrator.sayln(String.format("\n\t > All Categories (%d): ", categoryService.count()));
             for (Category category : categoryService.findAll()) {
                 narrator.sayln("\t > " + category.toString());
             }
@@ -75,10 +74,10 @@ public class CategoryConsole {
 
             try {
                 categoryFound = categoryService.findByName(categoryName);
-                if (categoryFound!=null){
+                if (categoryFound != null) {
                     narrator.sayln("\t > Found category: " + categoryFound);
                 }
-            } catch ( ServiceException | RepositoryException  e) {
+            } catch (ServiceException | RepositoryException e) {
                 narrator.sayln(e.getMessage());
             }
         }

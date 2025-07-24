@@ -1,6 +1,8 @@
 package uz.kruz.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import uz.kruz.domain.vo.BaseEntity;
 import uz.kruz.domain.vo.OrderStatus;
@@ -23,4 +25,17 @@ public class Order extends BaseEntity {
     private User user;
     private List<OrderItem> orderItems;
     private Shipment shipment;
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + getId() +
+                ", userId=" + userId +
+                ", totalAmount=" + totalAmount +
+                ", status=" + status +
+                ", orderDate=" + orderDate +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 }

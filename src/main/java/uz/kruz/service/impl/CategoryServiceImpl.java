@@ -61,7 +61,9 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.retrieveById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Category with ID '%d' not found", id)));
         boolean modified = false;
-
+        if (category.getName().equals(dto.getName())){
+            throw new DuplicateEntityException(String.format("Category with name '%s' already exists", dto.getName()));
+        }
 
         if (dto.getName() != null) {
             Validator.validateString(dto.getName(), "name");

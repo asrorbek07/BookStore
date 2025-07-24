@@ -1,6 +1,7 @@
 package uz.kruz.menu;
 
 
+import uz.kruz.console.OrderConsole;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
 
@@ -11,11 +12,13 @@ public class OrderMenu {
 
     private Scanner scanner;
     private Narrator narrator;
+    private OrderConsole orderConsole;
 
     public OrderMenu() {
         //
         this.scanner = new Scanner(System.in);
         this.narrator = new Narrator(this, TalkingAt.Left);
+        this.orderConsole = new OrderConsole();
     }
 
     public void show() {
@@ -29,16 +32,16 @@ public class OrderMenu {
             switch (inputNumber) {
                 //
                 case 1:
-                    narrator.sayln("Added order");
+                    orderConsole.showAll();
                     break;
                 case 2:
-                    narrator.sayln("Deleted order");
+                    orderConsole.register();
                     break;
                 case 3:
-                    narrator.sayln("Updated order");
+                    orderConsole.delete();
                     break;
                 case 4:
-                    narrator.sayln("Showing orders");
+                    orderConsole.modify();
 					break;
                 case 0:
                     this.exitProgram();
@@ -55,10 +58,10 @@ public class OrderMenu {
         narrator.sayln("..............................");
         narrator.sayln(" Order menu ");
         narrator.sayln("..............................");
-        narrator.sayln("1. Add Order");
-        narrator.sayln("2. Delete Order");
-        narrator.sayln("3. Update Order");
-        narrator.sayln("4. View Orders");
+        narrator.sayln("1. Show all orders");
+        narrator.sayln("2. Add Order");
+        narrator.sayln("3. Delete Order");
+        narrator.sayln("4. Update Order");
         narrator.sayln("..............................");
         narrator.sayln(" 0. Exit program");
         narrator.sayln("..............................");

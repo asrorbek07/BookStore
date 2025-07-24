@@ -1,6 +1,8 @@
 package uz.kruz.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import uz.kruz.domain.vo.BaseEntity;
 
@@ -16,8 +18,19 @@ public class OrderItem extends BaseEntity {
     private Integer quantity;
     private BigDecimal price;
 
-    // Relationships (not stored in database directly)
     private Order order;
     private Book book;
 
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "id=" + getId() +
+                ", orderId=" + orderId +
+                ", bookId=" + bookId +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 }

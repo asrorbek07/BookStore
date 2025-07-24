@@ -1,6 +1,8 @@
 package uz.kruz.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import uz.kruz.domain.vo.BaseEntity;
 
@@ -17,7 +19,18 @@ public class Shipment extends BaseEntity {
     private LocalDateTime shippedAt;
     private LocalDate deliveryEstimate;
 
-    // Relationships (not stored in database directly)
     private Order order;
 
+    @Override
+    public String toString() {
+        return "Shipment{" +
+                "id=" + getId() +
+                ", orderId=" + orderId +
+                ", trackingNumber='" + trackingNumber + '\'' +
+                ", shippedAt=" + shippedAt +
+                ", deliveryEstimate=" + deliveryEstimate +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 }

@@ -1,6 +1,8 @@
 package uz.kruz.domain;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import uz.kruz.domain.vo.BaseEntity;
 
@@ -24,5 +26,21 @@ public class Book extends BaseEntity {
     private Publisher publisher;
     private List<Author> authors;
     private List<Review> reviews;
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + getId() +
+                ", title='" + title + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                ", publishedYear=" + publishedYear +
+                ", categoryId=" + categoryId +
+                ", publisherId=" + publisherId +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 
 }

@@ -1,6 +1,7 @@
 package uz.kruz.menu;
 
 
+import uz.kruz.console.PublisherConsole;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
 
@@ -8,12 +9,13 @@ import java.util.Scanner;
 
 public class PublisherMenu {
 	//
-
+	PublisherConsole publisherConsole;
 	private Scanner scanner;
 	private Narrator narrator;
 
 	public PublisherMenu() {
 		//
+		this.publisherConsole = new PublisherConsole();
 		this.scanner = new Scanner(System.in);
 		this.narrator = new Narrator(this, TalkingAt.Left);
 	}
@@ -30,7 +32,18 @@ public class PublisherMenu {
 			//
 			case 0:
 				this.exitProgram();
-
+				case 1:
+					publisherConsole.register();
+					break;
+					case 2:
+						narrator.sayln("deleted publisher");
+						break;
+						case 3:
+							narrator.sayln("updated publisher");
+							break;
+							case 4:
+								narrator.sayln("Updated publisher");
+								break;
 			default:
 				narrator.sayln("Choose again!");
 			}
@@ -42,9 +55,10 @@ public class PublisherMenu {
 		narrator.sayln("");
 		narrator.sayln("..............................");
 		narrator.sayln(" Main menu ");
-		narrator.sayln("..............................");
-
-		narrator.sayln("..............................");
+		narrator.sayln("1. Add publisher");
+		narrator.sayln("2. Delete publisher");
+		narrator.sayln("3. Edit publisher");
+		narrator.sayln("4. Update publisher");
 		narrator.sayln(" 0. Exit program");
 		narrator.sayln("..............................");
 	}
@@ -54,7 +68,7 @@ public class PublisherMenu {
 		narrator.say("Select: ");
 		int menuNumber = scanner.nextInt();
 
-		if (menuNumber >= 0 && menuNumber <= 6) {
+		if (menuNumber >= 0 && menuNumber <= 4) {
 			scanner.nextLine();
 			return menuNumber;
 		} else {
