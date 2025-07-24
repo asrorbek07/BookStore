@@ -1,19 +1,22 @@
 package uz.kruz.menu;
 
 
+import uz.kruz.console.AuthorConsole;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
+
 
 import java.util.Scanner;
 
 public class AuthorMenu {
     //
-
+    private AuthorConsole authorConsole;
     private Scanner scanner;
     private Narrator narrator;
 
     public AuthorMenu() {
         //
+        this.authorConsole = new AuthorConsole();
         this.scanner = new Scanner(System.in);
         this.narrator = new Narrator(this, TalkingAt.Left);
     }
@@ -27,20 +30,18 @@ public class AuthorMenu {
             inputNumber = selectMenu();
 
             switch (inputNumber) {
+                //
                 case 1:
-                    narrator.sayln("New author added");
+                    authorConsole.register();
                     break;
                 case 2:
-                    narrator.sayln("Author name is edited or updated");
+                    authorConsole.modify();
                     break;
                 case 3:
-                    narrator.sayln("Author deleted from table");
+                    authorConsole.remove();
                     break;
                 case 4:
-                    narrator.sayln("Showing all authors names");
-                    break;
-                case 5:
-                    narrator.sayln("All authors deleted");
+                    authorConsole.showAll();
                     break;
                 case 0:
                     this.exitProgram();
