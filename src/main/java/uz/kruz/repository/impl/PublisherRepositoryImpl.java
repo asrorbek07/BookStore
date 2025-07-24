@@ -4,8 +4,8 @@ import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Publisher;
 import uz.kruz.repository.PublisherRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
-import uz.kruz.util.exceptions.RowNotFoundException;
 import uz.kruz.util.exceptions.RepositoryException;
+import uz.kruz.util.exceptions.RowNotFoundException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,6 +20,8 @@ public class PublisherRepositoryImpl implements PublisherRepository {
     private static final String UPDATE = "UPDATE publishers SET name = ?, contact_email = ?, phone = ? WHERE id = ?";
     private static final String COUNT = "SELECT COUNT(*) FROM publishers";
     private static final String SELECT_BY_NAME = "SELECT * FROM publishers WHERE name LIKE ?";
+    private static final String EXISTS_BY_CONTACT_EMAIL = "SELECT EXISTS(SELECT 1 FROM publishers WHERE contact_email = ?)";
+    private static final String EXISTS_BY_PHONE = "SELECT EXISTS(SELECT 1 FROM publishers WHERE phone = ?)";
     private static final String SELECT_BY_EMAIL = "SELECT * FROM publishers WHERE contact_email = ?";
 
     private final Connection connection;
@@ -161,8 +163,35 @@ public class PublisherRepositoryImpl implements PublisherRepository {
     }
 
     @Override
-    public Optional<Publisher> findFirstByEmail(String email) {
-        return Optional.empty();
+    public boolean existsByContactEmail(String contactEmail) {
+        try {
+            try (PreparedStatement ps = connection.prepareStatement(EXISTS_BY_CONTACT_EMAIL)) {
+                ps.setString(1, contactEmail);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    return rs.getBoolean(1);
+                }
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Error checking if publisher exists by contact email", e);
+        }
+    }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        try {
+            try (PreparedStatement ps = connection.prepareStatement(EXISTS_BY_PHONE)) {
+                ps.setString(1, phone);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    return rs.getBoolean(1);
+                }
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new RepositoryException("Error checking if publisher exists by phone", e);
+        }
     }
 
     private Publisher mapRow(ResultSet rs) throws SQLException {

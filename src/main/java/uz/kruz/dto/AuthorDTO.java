@@ -1,9 +1,10 @@
 package uz.kruz.dto;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -13,6 +14,16 @@ import java.util.List;
 @SuperBuilder
 public class AuthorDTO extends BaseDTO {
     private String fullName;
-    private List<Integer> bookIds; // Only store IDs of related books, not the full objects
+    private List<Integer> bookIds;
+
+    @Override
+    public String toString() {
+        return "AuthorDTO{" +
+                "id=" + getId() +
+                ", fullName='" + fullName + '\'' +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 
 }

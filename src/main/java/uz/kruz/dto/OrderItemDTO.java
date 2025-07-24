@@ -14,4 +14,17 @@ public class OrderItemDTO extends BaseDTO {
     private Integer bookId;
     private Integer quantity;
     private Double price;
+
+    @Override
+    public String toString() {
+        return "OrderItemDTO{" +
+                "id=" + getId() +
+                ", orderId=" + orderId +
+                ", bookId=" + bookId +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 }

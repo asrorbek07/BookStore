@@ -1,6 +1,5 @@
 package uz.kruz.dto;
 
-import com.sun.jna.platform.win32.Sspi;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,8 +13,21 @@ import java.sql.Timestamp;
 @Setter
 @SuperBuilder
 public class ShipmentDTO extends BaseDTO {
-        private  Integer orderId;
-        private String trackingNo;
-        private Timestamp shippedAt;
-        private Date deliveryEstimate;
+    private Integer orderId;
+    private String trackingNo;
+    private Timestamp shippedAt;
+    private Date deliveryEstimate;
+
+    @Override
+    public String toString() {
+        return "ShipmentDTO{" +
+                "id=" + getId() +
+                ", orderId=" + orderId +
+                ", trackingNo='" + trackingNo + '\'' +
+                ", shippedAt=" + shippedAt +
+                ", deliveryEstimate=" + deliveryEstimate +
+                ", createdAt=" + getCreatedAt() +
+                ", updatedAt=" + getUpdatedAt() +
+                '}';
+    }
 }

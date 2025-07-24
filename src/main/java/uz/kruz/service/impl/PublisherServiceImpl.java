@@ -15,10 +15,10 @@ import java.util.Optional;
 
 public class PublisherServiceImpl implements PublisherService {
 
-    private PublisherRepository publisherRepository = null;
+    private final PublisherRepository publisherRepository;
 
     public PublisherServiceImpl(PublisherRepositoryImpl publisherRepository) {
-        this.publisherRepository = this.publisherRepository;
+        this.publisherRepository = publisherRepository;
     }
 
     @Override
@@ -26,21 +26,26 @@ public class PublisherServiceImpl implements PublisherService {
         if (dto == null) {
             throw new ServiceException("PublisherDTO must not be null");
         }
-        Validator.validateString(dto.getName(), "Email");
-        Validator.validateString(dto.getPhone(), "Password");
-        publisherRepository.findFirstByEmail(dto.getContact_email()   )
-                .ifPresent(existing -> {
-                    throw new DuplicateEntityException(String.format("User with email '%s' already exists", dto.getContact_email()));
+        Validator.validateString(dto.getName(), "Name");
+        publisherRepository.retrieveByName(dto.getName())
+                .ifPresent(publisher -> {
+                    throw new DuplicateEntityException(String.format("Publisher with name '%s' already exists", dto.getName()));
                 });
-        if (dto.getName() != null) {
-            Validator.validateString(dto.getName(), "Full name");
+        if (dto.getContactEmail() != null) {
+            Validator.validateString(dto.getContactEmail(), "Contact Email");
+            if (publisherRepository.existsByContactEmail(dto.getContactEmail())) {
+                throw new DuplicateEntityException(String.format("Publisher with contact email '%s' already exists", dto.getContactEmail()));
+            }
         }
         if (dto.getPhone() != null) {
-            Validator.validateString(dto.getPhone(), "Phone number");
+            Validator.validateString(dto.getPhone(), "Phone");
+            if (publisherRepository.existsByPhone(dto.getPhone())) {
+                throw new DuplicateEntityException(String.format("Publisher with phone '%s' already exists", dto.getPhone()));
+            }
         }
         Publisher publisher = Publisher.builder()
-                .contactEmail(dto.getContact_email())
                 .name(dto.getName())
+                .contactEmail(dto.getContactEmail())
                 .phone(dto.getPhone())
                 .build();
         return publisherRepository.create(publisher);
@@ -54,18 +59,18 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public List<Publisher> findAll() {
-    return publisherRepository.retrieveAll();
+        return publisherRepository.retrieveAll();
     }
 
     @Override
     public boolean removeById(Integer id) {
-      Validator.validateId(id);
+        Validator.validateId(id);
 
-      if(publisherRepository.retrieveById(id).isEmpty()) {
-          throw new EntityNotFoundException(String.format("Publisher with id '%s' not found", id));
-      }
+        if (publisherRepository.retrieveById(id).isEmpty()) {
+            throw new EntityNotFoundException(String.format("Publisher with id '%s' not found", id));
+        }
 
-      return publisherRepository.deleteById(id);
+        return publisherRepository.deleteById(id);
     }
 
     @Override
@@ -75,23 +80,23 @@ public class PublisherServiceImpl implements PublisherService {
         Publisher publisher = publisherRepository.retrieveById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Publisher with ID '%d' not found", id)));
 
-    boolean modified = false;
+        boolean modified = false;
 
-    if (dto.getName() != null) {
-        Validator.validateString(dto.getName(), "Full name");
-        publisher.setName(dto.getName());
-        modified = true;
-      }
+        if (dto.getName() != null) {
+            Validator.validateString(dto.getName(), "Full name");
+            publisher.setName(dto.getName());
+            modified = true;
+        }
 
-    if (dto.getPhone() != null) {
-        Validator.validateString(dto.getPhone(), "Phone number");
-        publisher.setPhone(dto.getPhone());
-        modified = true;
-      }
+        if (dto.getPhone() != null) {
+            Validator.validateString(dto.getPhone(), "Phone number");
+            publisher.setPhone(dto.getPhone());
+            modified = true;
+        }
 
-    if (!modified) {
-        throw new ServiceException(String.format("No fields provided for update"));
-       }
+        if (!modified) {
+            throw new ServiceException(String.format("No fields provided for update"));
+        }
         return publisherRepository.update(publisher);
     }
 
@@ -113,7 +118,7 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public List<Publisher> findByEmail(String email) {
-        Validator.validateString(email,"email");
+        Validator.validateString(email, "email");
         return publisherRepository.retrieveByEmail(email);
     }
 }
