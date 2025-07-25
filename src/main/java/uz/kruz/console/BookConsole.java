@@ -22,6 +22,8 @@ import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.util.exceptions.ServiceException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookConsole {
     private BookService bookService;
@@ -106,9 +108,21 @@ public class BookConsole {
             } catch (RepositoryException e) {
                 narrator.sayln(e.getMessage());
             }
+            List<Integer> authorIds = new ArrayList<>();
             Integer authorId = consoleUtil.getValueOfInteger("\nEnter the author id");
             if (authorId.equals(0)) {
                 return;
+            }
+
+            while (true) {
+                if (authorId.equals(0)) {
+                    return;
+
+                } else if (authorId < 0) {
+                    break;
+                }
+                authorIds.add(authorId);
+                authorId = consoleUtil.getValueOfInteger("\nEnter the next author id ('-1' > to finish entering author id)");
             }
 
 
@@ -121,7 +135,7 @@ public class BookConsole {
                         .publishedYear(publisherYear)
                         .categoryId(categoryId)
                         .publisherId(publisherId)
-
+                        .authorIds(authorIds)
                         .build();
                 bookService.register(bookDTO);
                 narrator.say("\nBook registered successfully: " + bookDTO.toString());

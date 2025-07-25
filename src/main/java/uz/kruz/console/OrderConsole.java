@@ -5,9 +5,7 @@ import uz.kruz.domain.OrderItem;
 import uz.kruz.domain.vo.OrderStatus;
 import uz.kruz.dto.OrderDTO;
 import uz.kruz.dto.OrderItemDTO;
-import uz.kruz.repository.impl.BookRepositoryImpl;
-import uz.kruz.repository.impl.OrderItemRepositoryImpl;
-import uz.kruz.repository.impl.OrderRepositoryImpl;
+import uz.kruz.repository.impl.*;
 import uz.kruz.service.BookService;
 import uz.kruz.service.OrderItemService;
 import uz.kruz.service.OrderService;
@@ -38,7 +36,7 @@ public class OrderConsole {
         //
         this.orderService = new OrderServiceImpl(new OrderRepositoryImpl());
         this.orderItemService = new OrderItemServiceImpl(new OrderItemRepositoryImpl(), new BookRepositoryImpl());
-        this.bookService = new BookServiceImpl(new BookRepositoryImpl());
+        this.bookService = new BookServiceImpl(new BookRepositoryImpl(),new CategoryRepositoryImpl(),new PublisherRepositoryImpl(),new AuthorRepositoryImpl());
         this.narrator = new Narrator(this, TalkingAt.Left);
         this.consoleUtil = new ConsoleUtil(narrator);
     }
