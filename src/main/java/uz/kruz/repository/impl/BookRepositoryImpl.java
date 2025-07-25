@@ -2,6 +2,7 @@ package uz.kruz.repository.impl;
 
 import uz.kruz.db.DatabaseConnection;
 import uz.kruz.domain.Book;
+import uz.kruz.domain.BookAuthor;
 import uz.kruz.repository.BookRepository;
 import uz.kruz.util.exceptions.DatabaseUnavailableException;
 import uz.kruz.util.exceptions.RowNotFoundException;
@@ -16,7 +17,8 @@ public class BookRepositoryImpl implements BookRepository {
 
     private final Connection connection;
 
-    private static final String INSERT = "INSERT INTO books (title, isbn, price, stock, published_year) VALUES (?, ?, ?, ?, ?)";
+    private static final String INSERT = "INSERT INTO books (title, isbn, price, stock, published_year,category_id,publisher_id) VALUES (?, ?, ?, ?, ?,?,?)";
+    private static final String INSERT_INTO_book_authors = "INSERT INTO book_authors (author_id, book_id) VALUES (?, ?)";
     private static final String SELECT_BY_ID = "SELECT * FROM books WHERE id = ?";
     private static final String DELETE_BY_ID = "DELETE FROM books WHERE id = ?";
     private static final String SELECT_ALL = "SELECT * FROM books";
@@ -46,6 +48,8 @@ public class BookRepositoryImpl implements BookRepository {
             ps.setBigDecimal(3, entity.getPrice());
             ps.setInt(4, entity.getStock());
             ps.setInt(5, entity.getPublishedYear());
+            ps.setInt(6, entity.getCategory().getId());
+            ps.setInt(7, entity.getPublisher().getId());
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -57,6 +61,14 @@ public class BookRepositoryImpl implements BookRepository {
             throw new RepositoryException("Error creating book", e);
         }
     }
+
+//    public BookAuthor createBookAuthor(BookAuthor entity) {
+//        try (PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INTO_book_authors, Statement.RETURN_GENERATED_KEYS)) {
+//            preparedStatement.setString(1, entity.getBook().getTitle());
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Override
     public Optional<Book> retrieveById(Integer id) {
@@ -220,7 +232,7 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public Boolean existsByIsbn(String isbn) {
 
-        try (PreparedStatement ps = connection.prepareStatement(EXIST_BY_ISBN)){
+        try (PreparedStatement ps = connection.prepareStatement(EXIST_BY_ISBN)) {
             ps.setString(1, isbn);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
