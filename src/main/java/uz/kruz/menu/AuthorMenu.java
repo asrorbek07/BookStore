@@ -5,7 +5,6 @@ import uz.kruz.console.AuthorConsole;
 import uz.kruz.util.Narrator;
 import uz.kruz.util.TalkingAt;
 
-
 import java.util.Scanner;
 
 public class AuthorMenu {
@@ -32,16 +31,16 @@ public class AuthorMenu {
             switch (inputNumber) {
                 //
                 case 1:
-                    authorConsole.register();
+                    authorConsole.showAll();
                     break;
                 case 2:
-                    authorConsole.modify();
+                    authorConsole.register();
                     break;
                 case 3:
-                    authorConsole.remove();
+                    authorConsole.modify();
                     break;
                 case 4:
-                    authorConsole.showAll();
+                    authorConsole.remove();
                     break;
                 case 0:
                     this.exitProgram();
@@ -58,11 +57,10 @@ public class AuthorMenu {
         narrator.sayln("..............................");
         narrator.sayln(" Author menu ");
         narrator.sayln("..............................");
-        narrator.sayln("1. Add new author");
-        narrator.sayln("2. Edit author name");
-        narrator.sayln("3. Delete author");
-        narrator.sayln("4. Show all authors");
-        narrator.sayln("5. Delete all authors");
+        narrator.sayln(" 1. View all author");
+        narrator.sayln(" 2. Create author");
+        narrator.sayln(" 3. Edit author");
+        narrator.sayln(" 4. Delete author");
         narrator.sayln("..............................");
         narrator.sayln(" 0. Exit program");
         narrator.sayln("..............................");

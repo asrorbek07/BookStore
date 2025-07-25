@@ -8,7 +8,7 @@ public class DatabaseConnection {
 
     private static final String DB_URL = "jdbc:mariadb://localhost:3306/bookstore";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "muza7777";
+    private static final String DB_PASSWORD = "root1234";
     
     private static DatabaseConnection instance;
     

@@ -116,6 +116,7 @@ public class BookRepositoryImpl implements BookRepository {
             ps.setBigDecimal(3, entity.getPrice());
             ps.setInt(4, entity.getStock());
             ps.setInt(5, entity.getPublishedYear());
+            ps.setInt(6, entity.getId());
 
             int updated = ps.executeUpdate();
             if (updated == 0) {

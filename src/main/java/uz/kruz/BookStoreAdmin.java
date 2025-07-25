@@ -15,8 +15,8 @@ public class BookStoreAdmin {
 
     public void run() {
         System.out.println("Bookstore Application Started!");
-        initializeDatabase();
-        populateDatabase();
+//        initializeDatabase();
+//        populateDatabase();
         mainMenu.show();
 
     }

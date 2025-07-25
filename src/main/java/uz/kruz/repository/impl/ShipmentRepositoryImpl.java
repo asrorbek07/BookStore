@@ -103,6 +103,8 @@ public class ShipmentRepositoryImpl implements ShipmentRepository {
             ps.setString(2, entity.getTrackingNumber());
             ps.setTimestamp(3, Timestamp.valueOf(entity.getShippedAt()));
             ps.setDate(4, Date.valueOf(entity.getDeliveryEstimate()));
+            ps.setInt(5, entity.getId());
+
             int updated = ps.executeUpdate();
             if (updated == 0) {
                 throw new RowNotFoundException("Shipment with id " + entity.getId() + " not found for update");

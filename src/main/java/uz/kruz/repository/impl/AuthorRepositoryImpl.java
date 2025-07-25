@@ -46,7 +46,8 @@ public class AuthorRepositoryImpl implements AuthorRepository {
             if (rs.next()) {
                 entity.setId(rs.getInt(1));
             }
-            return entity;
+            return retrieveById(entity.getId()).orElseThrow(() ->
+                new RepositoryException("Author not found after creation: " + entity.getFullName()));
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new DuplicateRowException("Author already exists: " + entity.getFullName(), e);
         } catch (SQLException e) {
@@ -101,6 +102,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     public Author update(Author entity) {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setString(1, entity.getFullName());
+            ps.setInt(2, entity.getId());
             int rows = ps.executeUpdate();
             if (rows == 0) {
                 throw new RowNotFoundException("Author not found for update with ID: " + entity.getId());

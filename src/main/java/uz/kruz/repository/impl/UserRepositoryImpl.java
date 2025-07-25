@@ -105,6 +105,8 @@ public class UserRepositoryImpl implements UserRepository {
             ps.setString(3, user.getPassword());
             ps.setString(4, user.getPhone());
             ps.setString(5, user.getRole().name());
+            ps.setInt(6, user.getId());
+
             int updated = ps.executeUpdate();
             if (updated == 0) {
                 throw new RowNotFoundException("User not found for ID: " + user.getId());

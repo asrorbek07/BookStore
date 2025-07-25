@@ -98,6 +98,8 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setInt(1, entity.getQuantity());
             ps.setBigDecimal(2, entity.getPrice());
+            ps.setInt(3, entity.getId());
+
             int updated = ps.executeUpdate();
             if (updated == 0) {
                 throw new RowNotFoundException("No OrderItem found with ID: " + entity.getId());

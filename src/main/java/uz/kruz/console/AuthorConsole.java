@@ -6,34 +6,42 @@ import uz.kruz.repository.impl.AuthorRepositoryImpl;
 import uz.kruz.repository.impl.BookRepositoryImpl;
 import uz.kruz.service.AuthorService;
 import uz.kruz.service.impl.AuthorServiceImpl;
-import uz.kruz.util.*;
+import uz.kruz.util.ConsoleUtil;
+import uz.kruz.util.Narrator;
+import uz.kruz.util.TalkingAt;
+import uz.kruz.util.Validator;
 import uz.kruz.util.exceptions.RepositoryException;
 import uz.kruz.util.exceptions.ServiceException;
+
+import java.util.List;
 
 public class AuthorConsole {
     private AuthorService authorService;
     private ConsoleUtil consoleUtil;
     private final Narrator narrator;
-    public AuthorConsole(){
-        this.authorService = new AuthorServiceImpl(new AuthorRepositoryImpl(),new BookRepositoryImpl());
+
+    public AuthorConsole() {
+        this.authorService = new AuthorServiceImpl(new AuthorRepositoryImpl(), new BookRepositoryImpl());
         this.narrator = new Narrator(this, TalkingAt.Left);
-        this.consoleUtil =  new ConsoleUtil(narrator);
+        this.consoleUtil = new ConsoleUtil(narrator);
     }
-    public void showAll(){
-        try{
-            narrator.sayln("\n\t > All Authors: ");
+
+    public void showAll() {
+        try {
+            narrator.sayln(String.format("\n\t > All Authors (%d): ", authorService.count()));
             for (Author author : authorService.findAll()) {
                 narrator.sayln("\t > " + author.toString());
             }
 
-        }catch(ServiceException | RepositoryException e){
+        } catch (ServiceException | RepositoryException e) {
             narrator.sayln("Error: " + e.getMessage());
         }
     }
-    public void register(){
+
+    public void register() {
         //
         String authorName = consoleUtil.getValueOf("\n author name(1.Author menu) ");
-        if (authorName.equals("0")){
+        if (authorName.equals("0")) {
             return;
         }
         try {
@@ -41,87 +49,87 @@ public class AuthorConsole {
             AuthorDTO authorDTO = AuthorDTO.builder()
                     .fullName(authorName)
                     .build();
-            authorService.register(authorDTO);
-            narrator.say("\n Registered Author: " + authorDTO.toString());
+            Author registeredAuthor = authorService.register(authorDTO);
+            narrator.say("\n Registered Author: " + registeredAuthor.toString());
 
-        }catch(IllegalArgumentException | ServiceException | RepositoryException e){
+        } catch (IllegalArgumentException | ServiceException | RepositoryException e) {
             //
             narrator.sayln("Error: " + e.getMessage());
         }
     }
-    public Author find() {
+
+    private Author findOne() {
+        //
         Author authorFound = null;
         while (true) {
             //
-            String authorName = consoleUtil.getValueOf("\n author name(1.Author menu) ");
-            if (authorName.equals("0")) {
-                break;
+            List<Author> authors = authorService.findAll();
+            for (int i = 0; i < authors.size(); i++) {
+                narrator.sayln("\t > " + (i + 1) + ". " + authors.get(i).toString());
             }
             try {
-                if (authorFound != null) {
-                    narrator.sayln("\t > found Author: " + authorFound);
+                String authorIndex = consoleUtil.getValueOf("\n select author index(0.Author menu) ");
+                int index = Integer.parseInt(authorIndex);
+                if (index == 0) return null;
+                if (!(index >= 0 && index <= authorService.count())) {
+                    narrator.sayln("Invalid index, please try again.");
+                    continue;
                 }
+                authorFound = authors.get(index - 1);
+                break;
+            } catch (NumberFormatException e) {
+                narrator.sayln("Invalid input, please enter a number.");
             } catch (ServiceException | RepositoryException e) {
                 narrator.sayln(e.getMessage());
             }
-
-
-        }
-
-        return authorFound;
-    }
-
-    private Author findOne(){
-        //
-        Author authorFound = null;
-        while(true){
-            narrator.sayln("\n\t > Found Author: " + authorFound);
-            break;
-        }
-        try {
-            authorFound = (Author) authorService.findByName(authorFound.getFullName());
-            narrator.sayln("\t > Found Author: " + authorFound);
-
-        }
-        catch (ServiceException | RepositoryException e){
-            narrator.sayln("Error: " + e.getMessage());
         }
         return authorFound;
     }
-    public void modify(){
+
+    public void modify() {
         //
         Author targetAuthor = findOne();
-        if (targetAuthor == null){
+        if (targetAuthor == null) {
             return;
         }
-        String   newName = consoleUtil.getValueOf("\n new category name(0.Category menu , Enter. no Change)");
-        if(newName.equals("0")){
+        String newName = consoleUtil.getValueOf("\n new author name(0.Author menu , Enter. no Change)");
+        if (newName.equals("0")) {
             return;
         }
-        AuthorDTO  authorDTO =  AuthorDTO.builder()
+        if (newName.isBlank()) newName=null;
+        else {
+            Validator.validateString(newName, "Name");
+        }
+        if (newName==null){
+            narrator.sayln("No changes made to the author name.");
+            return;
+        }
+        AuthorDTO authorDTO = AuthorDTO.builder()
                 .fullName(newName)
                 .build();
-        try{
-            authorService.modify(authorDTO, targetAuthor.getId());
-            narrator.sayln("\t > Modified category " + targetAuthor);
-        }catch(ServiceException | RepositoryException e){
+        try {
+            Author modifiedAuthor = authorService.modify(authorDTO, targetAuthor.getId());
+            narrator.sayln("\t > Modified Author " + modifiedAuthor);
+        } catch (ServiceException | RepositoryException e) {
             narrator.sayln("Error: " + e.getMessage());
         }
 
     }
-    public void remove(){
+
+    public void remove() {
         //
         Author targetAuthor = findOne();
-        if (targetAuthor == null){
+        if (targetAuthor == null) {
             return;
         }
 
 
-        String confirmStr =  consoleUtil.getValueOf("Remove this catogory ? , (Y:yes, N:no)");
-        if (confirmStr.toLowerCase().equals("y") || confirmStr.toLowerCase().equals("yes")){
-            narrator.sayln("\n\t > Remove this category " + targetAuthor.getFullName());
-        }else{
-            narrator.sayln("\n\t > Remove cancelled --> , your category  is safe. --> " +  targetAuthor.getFullName());
+        String confirmStr = consoleUtil.getValueOf("Remove this author ? , (Y:yes, N:no)");
+        if (confirmStr.toLowerCase().equals("y") || confirmStr.toLowerCase().equals("yes")) {
+            narrator.sayln("\n\t > Removing this Author " + targetAuthor.getFullName());
+            authorService.removeById(targetAuthor.getId());
+        } else {
+            narrator.sayln("\n\t > Remove cancelled --> , your author  is safe. --> " + targetAuthor.getFullName());
 
         }
     }

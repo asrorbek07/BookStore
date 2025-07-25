@@ -99,6 +99,7 @@ public class BookAuthorRepositoryImpl implements BookAuthorRepository {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE)) {
             ps.setInt(1, entity.getBookId());
             ps.setInt(2, entity.getAuthorId());
+            ps.setInt(3, entity.getId());
             int updated = ps.executeUpdate();
             if (updated == 0) {
                 throw new RowNotFoundException("No book-author found for update with ID: " + entity.getId());

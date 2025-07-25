@@ -81,6 +81,9 @@ public class AuthorServiceImpl implements AuthorService {
             author.setFullName(dto.getFullName());
             modified=true;
         }
+        if (!modified) {
+            throw new ServiceException("No fields provided for update");
+        }
         return authorRepository.update(author);
     }
 
